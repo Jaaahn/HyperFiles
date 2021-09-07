@@ -1,0 +1,22 @@
+#app {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+p {
+    text-align: left;
+}
+
+// Variables
+
+// Light
+@media (prefers-color-scheme: light) {
+    :root {
+    }
+}
+
+// Dark
+@media (prefers-color-scheme: dark) {
+    :root {
+    }
+}

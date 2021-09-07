@@ -1,0 +1,5 @@
+node_modules/
+.vs_code/
+.DS_Store
+vue-dist/
+out/

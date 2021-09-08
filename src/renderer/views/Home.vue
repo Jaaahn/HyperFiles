@@ -2,7 +2,7 @@
     <Header v-model="selectedTab" :tabs="tabs" />
 
     <hy-main id="home" maxWidth="2000px">
-        <FilesSplitView v-if="currentTabInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" />
+        <FilesSplitView v-if="currentTabInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" :paths="paths" :loadingFiles="loadingFiles" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" @updatePaths="updatePaths" />
     </hy-main>
 </template>
 
@@ -26,6 +26,16 @@ export default {
             currentClient: null,
             remoteFiles: [],
             localFiles: [],
+            paths: {
+                local: "",
+                localIsInvalid: false,
+                remote: "",
+                remoteIsInvalid: false,
+            },
+            loadingFiles: {
+                local: true,
+                remote: true,
+            },
             tabs,
         };
     },
@@ -43,6 +53,10 @@ export default {
                 if (this.currentClient) {
                     await this.currentClient.end();
                 }
+
+                // Initialize default paths
+                this.paths.remote = this.currentTabInfo.remote.path;
+                this.paths.local = this.currentTabInfo.local.path;
 
                 // Connect to new host
                 this.currentClient = new sftpClient();
@@ -64,7 +78,15 @@ export default {
     methods: {
         async getRemoteFiles() {
             console.log("Fetching remote files for:", this.currentTabInfo);
-            let dirPath = this.currentTabInfo.remote.path;
+            this.loadingFiles.remote = true;
+            let dirPath = this.paths.remote;
+
+            // Check if path exits
+            if ((await this.currentClient.exists(dirPath)) != "d") {
+                this.paths.remoteIsInvalid = true;
+                this.loadingFiles.remote = false;
+                return;
+            }
 
             let files = await this.currentClient.list(dirPath);
 
@@ -74,10 +96,22 @@ export default {
                     path: pathModule.join(dirPath, file.name),
                 };
             });
+
+            this.paths.remoteIsInvalid = false;
+            this.loadingFiles.remote = false;
         },
         async getLocalFiles() {
             console.log("Fetching local files for:", this.currentTabInfo);
-            let dirPath = this.currentTabInfo.local.path;
+            this.loadingFiles.local = true;
+            let dirPath = this.paths.local;
+
+            // Check if path exits
+            let stats = fs.statSync(dirPath, { throwIfNoEntry: false });
+            if (stats == undefined || stats.isDirectory() == false) {
+                this.paths.localIsInvalid = true;
+                this.loadingFiles.local = false;
+                return;
+            }
 
             let fileNames = await fsp.readdir(dirPath);
 
@@ -103,6 +137,18 @@ export default {
                     path: pathModule.join(dirPath, fileName),
                 };
             });
+
+            this.paths.localIsInvalid = false;
+            this.loadingFiles.local = false;
+        },
+        updatePaths(newPath, type) {
+            this.paths[type] = pathModule.join(newPath.trim());
+
+            if (type == "remote") {
+                this.getRemoteFiles();
+            } else {
+                this.getLocalFiles();
+            }
         },
     },
     components: {

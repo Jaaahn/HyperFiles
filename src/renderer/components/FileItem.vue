@@ -146,7 +146,7 @@ export default {
     border-radius: var(--element-border-radius);
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 20px;
 
     &:hover,
     &.renamingActive {
@@ -158,7 +158,7 @@ export default {
     }
 
     .icons i {
-        font-size: 30px;
+        font-size: 25px;
         padding-left: 10px;
         color: var(--accent-color);
     }
@@ -192,6 +192,10 @@ export default {
         .hyper-button {
             opacity: 0;
             margin: 0;
+
+            &:deep(button) {
+                padding: 10px;
+            }
         }
     }
 }

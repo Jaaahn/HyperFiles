@@ -1,33 +1,52 @@
 <template>
     <div class="filesSplitView">
         <div id="left" class="splitView">
-            <hy-flex-container class="header">
+            <div class="header">
                 <h3>Local</h3>
-                <p>{{ tabInfo.local.path }}</p>
 
-                <hy-button @click="selectLocalPath()" :extend="false" type="transparent">
-                    <i class="icon-target"></i>
-                </hy-button>
-                <hy-button @click="openNewDirDialogue('local')" :extend="false" type="transparent">
-                    <i class="icon-folder-plus"></i>
-                </hy-button>
-            </hy-flex-container>
+                <hy-flex-container>
+                    <input :value="paths.local" @keyup="updatePaths($event, 'local')" />
 
-            <div class="files">
+                    <hy-button @click="selectLocalPath()" :extend="false" type="transparent">
+                        <i class="icon-target"></i>
+                    </hy-button>
+                    <hy-button @click="openNewDirDialogue('local')" :extend="false" type="transparent">
+                        <i class="icon-folder-plus"></i>
+                    </hy-button>
+                </hy-flex-container>
+            </div>
+
+            <div class="viewInfo" v-if="loadingFiles.local">
+                <hy-loader />
+            </div>
+            <div class="viewInfo" v-else-if="paths.localIsInvalid">
+                <h3>Invalid Path</h3>
+            </div>
+            <div class="files" v-else>
                 <FileItem class="file" v-for="file in localFiles" :file="file" :client="client" :tabInfo="tabInfo" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" />
             </div>
         </div>
+
         <div id="right" class="splitView">
-            <hy-flex-container class="header">
+            <div class="header">
                 <h3>Remote</h3>
-                <p>{{ tabInfo.remote.path }}</p>
 
-                <hy-button @click="openNewDirDialogue('remote')" :extend="false" type="transparent">
-                    <i class="icon-folder-plus"></i>
-                </hy-button>
-            </hy-flex-container>
+                <hy-flex-container>
+                    <input :value="paths.remote" @keyup="updatePaths($event, 'remote')" />
 
-            <div class="files">
+                    <hy-button @click="openNewDirDialogue('remote')" :extend="false" type="transparent">
+                        <i class="icon-folder-plus"></i>
+                    </hy-button>
+                </hy-flex-container>
+            </div>
+
+            <div class="viewInfo" v-if="loadingFiles.remote">
+                <hy-loader />
+            </div>
+            <div class="viewInfo" v-else-if="paths.remoteIsInvalid">
+                <h3>Invalid Path</h3>
+            </div>
+            <div class="files" v-else>
                 <FileItem class="file" v-for="file in remoteFiles" :file="file" :client="client" :tabInfo="tabInfo" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" />
             </div>
         </div>
@@ -49,12 +68,14 @@ let pathModule = require("path");
 
 export default {
     name: "FilesSplitView",
-    emits: ["fetchRemote", "fetchLocal"],
+    emits: ["fetchRemote", "fetchLocal", "updatePaths"],
     props: {
         remoteFiles: Array,
         localFiles: Array,
         client: Object,
         tabInfo: Object,
+        paths: Object,
+        loadingFiles: Object,
     },
     data() {
         return {
@@ -95,6 +116,12 @@ export default {
             this.newDir.name = "";
             this.newDir.open = true;
         },
+        updatePaths(event, type) {
+            if (event.code != "Enter") return;
+
+            // this.paths[type] = event.target.value;
+            this.$emit("updatePaths", event.target.value, type);
+        },
     },
     components: {
         FileItem,
@@ -114,25 +141,38 @@ export default {
         background-color: var(--section-bg-color);
         border-radius: var(--section-border-radius);
         padding: var(--element-padding);
+        position: relative;
 
         // So that .files expands exactly to the height of this view
         display: flex;
         flex-direction: column;
-        gap: var(--flex-gap);
 
         .header {
-            margin: 0;
+            box-shadow: 0px 10px 10px -10px var(--element-shadow-color);
 
             h3 {
                 margin: 0;
                 flex: 0;
             }
 
-            p {
-                flex: 2;
-                color: gray;
-                font-size: 15px;
-                font-family: monospace;
+            .hyper-flexcontainer {
+                margin: 0;
+                margin-bottom: 5px;
+
+                input {
+                    border: none;
+                    background-color: var(--color-gray-3);
+                    border-radius: var(--element-border-radius);
+                    padding: 15px;
+                    flex: 2;
+                    color: gray;
+                    font-size: 15px;
+                    font-family: monospace;
+                }
+
+                .hyper-button :deep(button) {
+                    padding: 10px;
+                }
             }
         }
 
@@ -142,6 +182,13 @@ export default {
             flex-direction: column;
             gap: var(--flex-gap);
             height: auto;
+        }
+
+        .viewInfo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
         }
     }
 }

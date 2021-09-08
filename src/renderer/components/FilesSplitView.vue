@@ -26,8 +26,11 @@
             <div class="viewInfo" v-else-if="paths.localIsInvalid">
                 <h3>Invalid Path</h3>
             </div>
+            <div class="viewInfo" v-else-if="localFiles.length == 0">
+                <h3>Empty Directory</h3>
+            </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in localFiles" :file="file" :client="client" :tabInfo="tabInfo" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'local')" />
+                <FileItem class="file" v-for="file in localFiles" :file="file" :client="client" :paths="paths" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'local')" />
             </div>
         </div>
 
@@ -54,8 +57,11 @@
             <div class="viewInfo" v-else-if="paths.remoteIsInvalid">
                 <h3>Invalid Path</h3>
             </div>
+            <div class="viewInfo" v-else-if="remoteFiles.length == 0">
+                <h3>Empty Directory</h3>
+            </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in remoteFiles" :file="file" :client="client" :tabInfo="tabInfo" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'remote')" />
+                <FileItem class="file" v-for="file in remoteFiles" :file="file" :client="client" :paths="paths" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'remote')" />
             </div>
         </div>
     </div>
@@ -99,7 +105,7 @@ export default {
     methods: {
         async createNewDir() {
             this.newDir.loading = true;
-            let newDirPath = pathModule.join(this.tabInfo[this.newDir.type].path, this.newDir.name);
+            let newDirPath = pathModule.join(this.paths[this.newDir.type], this.newDir.name);
 
             try {
                 if (this.newDir.type == "remote") {

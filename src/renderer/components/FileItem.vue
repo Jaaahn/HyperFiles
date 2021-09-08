@@ -39,7 +39,7 @@ export default {
         type: String,
         file: Object,
         client: Object,
-        tabInfo: Object,
+        paths: Object,
     },
     data() {
         return {
@@ -71,7 +71,7 @@ export default {
     methods: {
         async upload() {
             // Remote path must include a valid filename
-            let remoteFilePath = pathModule.join(this.tabInfo.remote.path, this.file.name);
+            let remoteFilePath = pathModule.join(this.paths.remote, this.file.name);
 
             try {
                 if (this.isFile) await this.client.fastPut(this.file.path, remoteFilePath);
@@ -85,7 +85,7 @@ export default {
         },
         async download() {
             // Local path must include a valid filename
-            let localFilePath = pathModule.join(this.tabInfo.local.path, this.file.name);
+            let localFilePath = pathModule.join(this.paths.local, this.file.name);
 
             try {
                 if (this.isFile) await this.client.fastGet(this.file.path, localFilePath);

@@ -5,6 +5,10 @@
                 <h3>Local</h3>
 
                 <hy-flex-container>
+                    <hy-button @click="openParentFolder('local')" :extend="false" :disabled="paths.local == '/'" type="transparent">
+                        <i class="icon-chevron-down"></i>
+                    </hy-button>
+
                     <input :value="paths.local" @keyup="updatePaths($event, 'local')" />
 
                     <hy-button @click="selectLocalPath()" :extend="false" type="transparent">
@@ -32,6 +36,10 @@
                 <h3>Remote</h3>
 
                 <hy-flex-container>
+                    <hy-button @click="openParentFolder('remote')" :extend="false" :disabled="paths.remote == '/'" type="transparent">
+                        <i class="icon-chevron-down"></i>
+                    </hy-button>
+
                     <input :value="paths.remote" @keyup="updatePaths($event, 'remote')" />
 
                     <hy-button @click="openNewDirDialogue('remote')" :extend="false" type="transparent">
@@ -123,6 +131,10 @@ export default {
             // this.paths[type] = event.target.value;
             this.$emit("updatePaths", event.target.value, type);
         },
+        openParentFolder(type) {
+            let newPath = pathModule.join(this.paths[type], "..");
+            this.$emit("updatePaths", newPath, type);
+        },
         async selectLocalPath() {
             let info = await dialog.showOpenDialog({
                 properties: ["openDirectory"],
@@ -165,6 +177,10 @@ export default {
             h3 {
                 margin: 0;
                 flex: 0;
+            }
+
+            .icon-chevron-down::before {
+                transform: rotate(90deg);
             }
 
             .hyper-flexcontainer {

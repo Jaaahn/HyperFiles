@@ -77,68 +77,82 @@ export default {
     },
     methods: {
         async getRemoteFiles() {
-            console.log("Fetching remote files for:", this.currentTabInfo);
-            this.loadingFiles.remote = true;
-            let dirPath = this.paths.remote;
+            try {
+                console.log("Fetching remote files for:", this.currentTabInfo, this.paths.remote);
+                this.loadingFiles.remote = true;
+                let dirPath = this.paths.remote;
 
-            // Check if path exits
-            if ((await this.currentClient.exists(dirPath)) != "d") {
+                // Check if path exits
+                if ((await this.currentClient.exists(dirPath)) != "d") {
+                    this.paths.remoteIsInvalid = true;
+                    this.loadingFiles.remote = false;
+                    return;
+                }
+
+                // Get files
+                let files = await this.currentClient.list(dirPath);
+
+                // Include file path in file info
+                this.remoteFiles = files.map((file) => {
+                    return {
+                        ...file,
+                        path: pathModule.join(dirPath, file.name),
+                    };
+                });
+
+                this.paths.remoteIsInvalid = false;
+            } catch (error) {
+                console.error(error);
                 this.paths.remoteIsInvalid = true;
-                this.loadingFiles.remote = false;
-                return;
             }
 
-            let files = await this.currentClient.list(dirPath);
-
-            this.remoteFiles = files.map((file) => {
-                return {
-                    ...file,
-                    path: pathModule.join(dirPath, file.name),
-                };
-            });
-
-            this.paths.remoteIsInvalid = false;
             this.loadingFiles.remote = false;
         },
         async getLocalFiles() {
-            console.log("Fetching local files for:", this.currentTabInfo);
-            this.loadingFiles.local = true;
-            let dirPath = this.paths.local;
+            try {
+                console.log("Fetching local files for:", this.currentTabInfo, this.paths.local);
+                this.loadingFiles.local = true;
+                let dirPath = this.paths.local;
 
-            // Check if path exits
-            let stats = fs.statSync(dirPath, { throwIfNoEntry: false });
-            if (stats == undefined || stats.isDirectory() == false) {
-                this.paths.localIsInvalid = true;
-                this.loadingFiles.local = false;
-                return;
-            }
-
-            let fileNames = await fsp.readdir(dirPath);
-
-            // Format local files to adapt remote file syntax
-            this.localFiles = fileNames.map((fileName) => {
-                let stats = fs.statSync(pathModule.join(dirPath, fileName));
-
-                let type;
-                if (stats.isFile()) {
-                    type = "-";
-                } else if (stats.isDirectory()) {
-                    type = "d";
-                } else if (stats.isSymbolicLink()) {
-                    type = "l";
+                // Check if path exits
+                let stats = fs.statSync(dirPath, { throwIfNoEntry: false });
+                if (stats == undefined || stats.isDirectory() == false) {
+                    this.paths.localIsInvalid = true;
+                    this.loadingFiles.local = false;
+                    return;
                 }
 
-                return {
-                    name: fileName,
-                    size: stats.size,
-                    modifyTime: stats.mtimeMs,
-                    accessTime: stats.atimeMs,
-                    type,
-                    path: pathModule.join(dirPath, fileName),
-                };
-            });
+                let fileNames = await fsp.readdir(dirPath);
 
-            this.paths.localIsInvalid = false;
+                // Format local files to adapt remote file syntax
+                this.localFiles = fileNames.map((fileName) => {
+                    let stats = fs.statSync(pathModule.join(dirPath, fileName));
+
+                    let type;
+                    if (stats.isFile()) {
+                        type = "-";
+                    } else if (stats.isDirectory()) {
+                        type = "d";
+                    } else if (stats.isSymbolicLink()) {
+                        type = "l";
+                    }
+
+                    return {
+                        name: fileName,
+                        size: stats.size,
+                        modifyTime: stats.mtimeMs,
+                        accessTime: stats.atimeMs,
+                        type,
+                        path: pathModule.join(dirPath, fileName),
+                    };
+                });
+
+                this.paths.localIsInvalid = false;
+            } catch (error) {
+                console.error(error);
+                this.paths.localIsInvalid = true;
+            }
+
             this.loadingFiles.local = false;
         },
         updatePaths(newPath, type) {

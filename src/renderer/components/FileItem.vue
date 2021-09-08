@@ -1,20 +1,30 @@
 <template>
-    <div class="fileItem">
-        <i class="icon-file icon" v-if="file.type == '-'"></i>
-        <i class="icon-folder icon" v-if="file.type == 'd'"></i>
-        <i class="icon-forward icon" v-if="file.type == 'l'"></i>
+    <div class="fileItem" :class="{ renamingActive: renaming.active }">
+        <div class="icons">
+            <i class="icon-file" v-if="file.type == '-'"></i>
+            <i class="icon-folder" v-if="file.type == 'd'"></i>
+            <i class="icon-forward" v-if="file.type == 'l'"></i>
+        </div>
 
         <div class="info">
-            <p class="name">{{ file.name }}</p>
+            <p class="name" v-if="!renaming.active">{{ file.name }}</p>
+            <hy-input v-model="renaming.newVal" v-else />
+
             <p class="details"><i class="icon-clock"></i> {{ new Date(file.modifyTime).toLocaleString() }}</p>
         </div>
 
-        <hy-button v-if="type == 'local'" @click="upload()" type="transparent"><i class="icon-upload"></i></hy-button>
-        <hy-button v-if="type == 'remote'" @click="download()" type="transparent"><i class="icon-download"></i></hy-button>
+        <div v-if="renaming.active == false" class="actions">
+            <hy-button v-if="type == 'local'" @click="upload()" type="transparent"><i class="icon-upload"></i></hy-button>
+            <hy-button v-if="type == 'remote'" @click="download()" type="transparent"><i class="icon-download"></i></hy-button>
 
-        <hy-button @click="deleteFile()" type="transparent"><i class="icon-trash"></i></hy-button>
+            <hy-button @click="deleteFile()" type="transparent"><i class="icon-trash"></i></hy-button>
 
-        <hy-button @click="renaming = true" type="transparent"><i class="icon-pen"></i></hy-button>
+            <hy-button @click="renaming.active = true" type="transparent"><i class="icon-pen"></i></hy-button>
+        </div>
+        <div v-else class="actions">
+            <hy-button @click="rename()" type="light-green"><i class="icon-check"></i></hy-button>
+            <hy-button @click="resetRename()" type="light-red"><i class="icon-cross"></i></hy-button>
+        </div>
     </div>
 </template>
 
@@ -33,8 +43,19 @@ export default {
     },
     data() {
         return {
-            renaming: true,
+            renaming: {
+                active: false,
+                newVal: this.file.name,
+            },
         };
+    },
+    watch: {
+        file: {
+            handler() {
+                this.renaming.newVal = this.file.name;
+            },
+            deep: true,
+        },
     },
     methods: {
         async upload() {
@@ -77,7 +98,26 @@ export default {
                 alert("Error while deleting file");
             }
         },
-        async rename() {},
+        async rename() {
+            let newFilePath = pathModule.join(pathModule.dirname(this.file.path), this.renaming.newVal);
+
+            try {
+                if (this.type == "remote") {
+                    await this.client.rename(this.file.path, newFilePath);
+                    this.$emit("fetchRemote");
+                } else {
+                    await fsp.rename(this.file.path, newFilePath);
+                    this.$emit("fetchLocal");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("Error while deleting file");
+            }
+        },
+        resetRename() {
+            this.renaming.active = false;
+            this.renaming.newVal = this.file.name;
+        },
     },
 };
 </script>
@@ -88,19 +128,19 @@ export default {
     border-radius: var(--element-border-radius);
     display: flex;
     align-items: center;
-    gap: 5px;
+    gap: 30px;
 
-    &:hover {
+    &:hover,
+    &.renamingActive {
         background-color: var(--color-gray-3);
 
-        .hyper-button {
+        .actions .hyper-button {
             opacity: 1;
         }
     }
 
-    .icon {
+    .icons i {
         font-size: 30px;
-        padding-right: 15px;
         padding-left: 10px;
         color: var(--accent-color);
     }
@@ -112,6 +152,14 @@ export default {
             margin: 0;
         }
 
+        .hyper-input {
+            margin: 5px 0;
+
+            &:deep(input) {
+                padding: 5px;
+            }
+        }
+
         .details {
             margin: 0;
             font-size: 15px;
@@ -119,9 +167,14 @@ export default {
         }
     }
 
-    .hyper-button {
-        opacity: 0;
-        margin: 0;
+    .actions {
+        display: flex;
+        gap: 5px;
+
+        .hyper-button {
+            opacity: 0;
+            margin: 0;
+        }
     }
 }
 </style>

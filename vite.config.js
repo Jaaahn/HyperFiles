@@ -10,4 +10,7 @@ export default {
     build: {
         outDir: "../vue-dist/",
     },
+    optimizeDeps: {
+        exclude: ["fs", "fs/promises", "path"],
+    },
 };

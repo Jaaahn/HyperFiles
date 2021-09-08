@@ -1,15 +1,15 @@
 <template>
     <div class="fileItem">
         <i class="icon-file icon" v-if="file.type == '-'"></i>
-        <i class="icon-clock icon" v-if="file.type == 'd'"></i>
-        <i class="icon-camera icon" v-if="file.type == 'l'"></i>
+        <i class="icon-folder icon" v-if="file.type == 'd'"></i>
+        <i class="icon-forward icon" v-if="file.type == 'l'"></i>
 
         <div class="info">
             <p class="name">{{ file.name }}</p>
-            <p class="details"><i class="icon-pen"></i> {{ new Date(file.modifyTime).toLocaleString() }}</p>
+            <p class="details"><i class="icon-clock"></i> {{ new Date(file.modifyTime).toLocaleString() }}</p>
         </div>
 
-        <hy-button v-if="type == 'local'" @click="upload()" type="transparent"><i class="icon-login"></i></hy-button>
+        <hy-button v-if="type == 'local'" @click="upload()" type="transparent"><i class="icon-upload"></i></hy-button>
         <hy-button v-if="type == 'remote'" @click="download()" type="transparent"><i class="icon-download"></i></hy-button>
 
         <hy-button @click="deleteFile()" type="transparent"><i class="icon-trash"></i></hy-button>

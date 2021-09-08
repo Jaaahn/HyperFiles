@@ -65,6 +65,7 @@ import Modal from "./Modal.vue";
 
 let fsp = require("fs/promises");
 let pathModule = require("path");
+const { dialog } = require("@electron/remote");
 
 export default {
     name: "FilesSplitView",
@@ -121,6 +122,17 @@ export default {
 
             // this.paths[type] = event.target.value;
             this.$emit("updatePaths", event.target.value, type);
+        },
+        async selectLocalPath() {
+            let info = await dialog.showOpenDialog({
+                properties: ["openDirectory"],
+            });
+
+            let path = info.filePaths[0];
+
+            if (path == undefined) return;
+
+            this.$emit("updatePaths", path, "local");
         },
     },
     components: {

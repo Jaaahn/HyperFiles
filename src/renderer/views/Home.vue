@@ -1,18 +1,8 @@
 <template>
+    <Header v-model="selectedTab" :tabs="tabs" />
+
     <hy-main id="home">
-        <hy-select v-model="selectedTab">
-            <option value="">Please choose</option>
-
-            <option v-for="tab in tabs" :value="tab.id" :key="tab.id">{{ tab.name }}</option>
-        </hy-select>
-
-        <hy-section v-if="currentTabInfo">
-            <h3>{{ currentTabInfo.name }}</h3>
-            <p>Remote Path: {{ currentTabInfo.remote?.path }}</p>
-            <p>Local Path: {{ currentTabInfo.local?.path }}</p>
-
-            <FilesSplitView :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" />
-        </hy-section>
+        <FilesSplitView v-if="currentTabInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" />
     </hy-main>
 </template>
 
@@ -25,6 +15,7 @@ let pathModule = require("path");
 
 import { tabs } from "../state.js";
 
+import Header from "../components/Header.vue";
 import FilesSplitView from "../components/FilesSplitView.vue";
 
 export default {
@@ -115,6 +106,7 @@ export default {
         },
     },
     components: {
+        Header,
         FilesSplitView,
     },
 };
@@ -122,5 +114,13 @@ export default {
 
 <style lang="scss" scoped>
 #home {
+    height: calc(100vh - 80px);
+    top: 80px;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 10px 0;
+    display: flex;
+    flex-direction: column;
+    position: relative;
 }
 </style>

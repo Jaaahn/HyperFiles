@@ -1,5 +1,5 @@
 <template>
-    <div class="fileItem" :class="{ renamingActive: renaming.active }">
+    <div class="fileItem" :class="{ renamingActive: renaming.active, isFolder: file.type == 'd' }">
         <div class="icons">
             <i class="icon-file" v-if="file.type == '-'"></i>
             <i class="icon-folder" v-if="file.type == 'd'"></i>
@@ -155,6 +155,10 @@ export default {
         .actions .hyper-button {
             opacity: 1;
         }
+    }
+
+    &.isFolder {
+        cursor: pointer;
     }
 
     .icons i {

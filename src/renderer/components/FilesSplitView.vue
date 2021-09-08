@@ -27,7 +27,7 @@
                 <h3>Invalid Path</h3>
             </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in localFiles" :file="file" :client="client" :tabInfo="tabInfo" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" />
+                <FileItem class="file" v-for="file in localFiles" :file="file" :client="client" :tabInfo="tabInfo" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'local')" />
             </div>
         </div>
 
@@ -55,7 +55,7 @@
                 <h3>Invalid Path</h3>
             </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in remoteFiles" :file="file" :client="client" :tabInfo="tabInfo" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" />
+                <FileItem class="file" v-for="file in remoteFiles" :file="file" :client="client" :tabInfo="tabInfo" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'remote')" />
             </div>
         </div>
     </div>
@@ -135,6 +135,10 @@ export default {
             let newPath = pathModule.join(this.paths[type], "..");
             this.$emit("updatePaths", newPath, type);
         },
+        openFolder(file, type) {
+            if (file.type != "d") return;
+            this.$emit("updatePaths", file.path, type);
+        },
         async selectLocalPath() {
             let info = await dialog.showOpenDialog({
                 properties: ["openDirectory"],
@@ -210,6 +214,7 @@ export default {
             flex-direction: column;
             gap: var(--flex-gap);
             height: auto;
+            padding-top: 10px;
         }
 
         .viewInfo {

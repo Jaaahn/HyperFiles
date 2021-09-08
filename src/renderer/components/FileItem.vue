@@ -29,12 +29,12 @@
 </template>
 
 <script>
-let fs = require("fs");
 let fsp = require("fs/promises");
 let pathModule = require("path");
 
 export default {
     name: "FileItem",
+    emits: ["fetchRemote", "fetchLocal"],
     props: {
         type: String,
         file: Object,

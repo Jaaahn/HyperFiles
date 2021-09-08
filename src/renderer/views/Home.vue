@@ -1,7 +1,7 @@
 <template>
     <Header v-model="selectedTab" :tabs="tabs" />
 
-    <hy-main id="home">
+    <hy-main id="home" maxWidth="2000px">
         <FilesSplitView v-if="currentTabInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" />
     </hy-main>
 </template>
@@ -114,11 +114,11 @@ export default {
 
 <style lang="scss" scoped>
 #home {
+    width: min(2000px, 100%) !important;
+    margin: 0;
+    padding: 10px;
     height: calc(100vh - 80px);
     top: 80px;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding: 10px 0;
     display: flex;
     flex-direction: column;
     position: relative;

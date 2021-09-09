@@ -1,21 +1,32 @@
 <template>
-    <div id="profiles">
-        <div id="selectProfile">
-            <h4>Select Profile</h4>
-            <hy-button v-for="(tab, i) in tabs" :type="currentTabId == i ? 'primary' : 'secondary'" @click="currentTabId = i" :key="tab.id">{{ tab.name }}</hy-button>
+    <hy-main id="profiles">
+        <h1>Launch new connection from favorites</h1>
 
-            <hy-button @click="createNewProfile()" style="margin-top: 50px"> <i class="icon-plus"></i> Create new Profile </hy-button>
-            <hy-button @click="$router.push('/')">Back to Home </hy-button>
-        </div>
+        <hy-section class="profile" v-for="tab in tabs" @dblclick.native="$router.push(`/ftp/${tab.id}`)" :key="tab.id">
+            <hy-flex-container>
+                <div class="name">
+                    <h3>{{ tab.name }}</h3>
+                    <p>{{ tab.remote.host }} at {{ tab.remote.port }}</p>
+                </div>
 
-        <div id="profileEditor">
-            <edit-profile v-model="tabs[currentTabId]" @delete="deleteCurrentProfile()" />
-        </div>
-    </div>
+                <hy-button type="transparent" :extend="false" @click="editProfile(tab.id)"> <i class="icon-pen"></i> </hy-button>
+                <hy-button type="transparent" :extend="false" @click="deleteProfile(tab.id)"> <i class="icon-trash"></i> </hy-button>
+                <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${tab.id}`)" id="openBtn"> <i class="icon-chevron-down"></i> </hy-button>
+            </hy-flex-container>
+        </hy-section>
+
+        <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
+    </hy-main>
+
+    <Modal :open="editing.open" @close="editing.open = false">
+        <edit-profile v-if="editing.profile" :profileData="editing.profile" />
+    </Modal>
 </template>
 
 <script>
 import EditProfile from "../components/EditProfile.vue";
+import Modal from "../components/Modal.vue";
+
 import { tabs } from "../state.js";
 import generateId from "../utils/generateId.js";
 
@@ -23,14 +34,19 @@ export default {
     name: "Profiles",
     data() {
         return {
+            editing: {
+                open: false,
+                profile: null,
+            },
             tabs,
-            currentTabId: 0,
         };
     },
     methods: {
         createNewProfile() {
+            let id = generateId();
+
             this.tabs.push({
-                id: generateId(),
+                id,
                 name: "New profile",
                 remote: {
                     path: "/",
@@ -45,43 +61,54 @@ export default {
                 },
             });
 
-            this.currentTabId = this.tabs.length - 1;
+            this.editProfile(id);
         },
-        deleteCurrentProfile() {
-            this.tabs.splice(this.currentTabId, 1);
-            this.currentTabId = 0;
+        editProfile(profileId) {
+            this.editing.profile = this.tabs.find((tab) => tab.id == profileId);
+            this.editing.open = true;
+        },
+        deleteProfile(profileId) {
+            this.editing.profile = false;
+            let profile = this.tabs.find((tab) => tab.id == profileId);
+
+            let index = this.tabs.indexOf(profile);
+            this.tabs.splice(index, 1);
         },
     },
     components: {
         EditProfile,
+        Modal,
     },
 };
 </script>
 
 <style lang="scss" scoped>
 #profiles {
-    display: flex;
-    gap: 30px;
+    .profile {
+        cursor: pointer;
 
-    #selectProfile {
-        max-width: 300px;
-        background-color: white;
-        padding: 20px;
+        .name {
+            h3 {
+                margin: 0;
+            }
 
-        h4 {
-            margin-top: 0;
+            p {
+                margin: 0;
+                color: gray;
+            }
+        }
+
+        #openBtn {
+            padding-left: 50px;
+
+            .icon-chevron-down::before {
+                transform: rotate(-90deg);
+            }
         }
     }
 
-    #profileEditor {
-        flex: 1;
-
-        #editProfile {
-            position: relative;
-            left: 50%;
-            transform: translateX(-50%);
-            max-width: min(95%, 800px);
-        }
+    #newBtn {
+        margin-top: 50px;
     }
 }
 </style>

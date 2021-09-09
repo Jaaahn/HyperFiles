@@ -1,17 +1,17 @@
 import { createWebHashHistory, createRouter } from "vue-router";
-import Home from "./views/Home.vue";
+import FTP from "./views/FTP.vue";
 import Profiles from "./views/Profiles.vue";
 
 const router = createRouter({
     history: createWebHashHistory(),
     routes: [
         {
-            path: "/",
-            name: "Home",
-            component: Home,
+            path: "/ftp/:profileId",
+            name: "FTP",
+            component: FTP,
         },
         {
-            path: "/profiles",
+            path: "/",
             name: "Profiles",
             component: Profiles,
         },

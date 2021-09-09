@@ -1,13 +1,11 @@
 <template>
     <div id="header">
         <hy-flex-container>
-            <hy-select :modelValue="modelValue" @update:modelValue="$emit('update:modelValue', $event)">
-                <option value="">Please choose</option>
+            <hy-button @click="$router.push('/')" :extend="false" type="transparent"> <i class="icon-chevron-down"></i> </hy-button>
 
-                <option v-for="tab in tabs" :value="tab.id" :key="tab.id">{{ tab.name }}</option>
-            </hy-select>
+            <h2>Connected to {{ currentTabInfo.name }}</h2>
 
-            <hy-button @click="$router.push('/profiles')" :extend="false"> <i class="icon-bars"></i> </hy-button>
+            <hy-button @click="$emit('reload')" :extend="false" type="transparent">Reload</hy-button>
         </hy-flex-container>
     </div>
 </template>
@@ -16,7 +14,6 @@
 export default {
     name: "Header",
     props: {
-        modelValue: String,
         tabs: Array,
         currentTabInfo: null,
     },
@@ -34,5 +31,18 @@ export default {
     position: fixed;
     background-color: var(--section-bg-color);
     box-shadow: var(--element-shadow);
+
+    .hyper-flexcontainer {
+        margin: 0;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        position: relative;
+        width: min(calc(100% - 20px), 2000px);
+
+        i::before {
+            transform: rotate(90deg);
+        }
+    }
 }
 </style>

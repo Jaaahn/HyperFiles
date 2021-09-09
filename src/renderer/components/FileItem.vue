@@ -1,13 +1,13 @@
 <template>
     <div class="fileItem" :class="{ renamingActive: renaming.active, isFolder: file.type == 'd' }">
         <div class="icons">
-            <i class="icon-file" v-if="file.type == '-'"></i>
-            <i class="icon-folder" v-if="file.type == 'd'"></i>
-            <i class="icon-forward" v-if="file.type == 'l'"></i>
+            <i class="icon-file" v-if="file.type == '-'" title="This item is a file"></i>
+            <i class="icon-folder" v-if="file.type == 'd'" title="This item is directory. Double click to open"></i>
+            <i class="icon-forward" v-if="file.type == 'l'" title="This item is a link"></i>
         </div>
 
         <div class="info">
-            <p class="name" v-if="!renaming.active">{{ file.name }}</p>
+            <p class="name" v-if="!renaming.active" :title="file.name">{{ file.name }}</p>
             <hy-input v-model="renaming.newVal" v-else />
 
             <p class="details"><i class="icon-clock"></i> {{ new Date(file.modifyTime).toLocaleString() }}</p>
@@ -184,14 +184,30 @@ export default {
     .icons i {
         font-size: 25px;
         padding-left: 10px;
-        color: var(--accent-color);
+
+        &.icon-file {
+            color: var(--accent-color);
+        }
+
+        &.icon-folder {
+            color: var(--color-pink);
+        }
+
+        &.icon-forward {
+            color: var(--color-yellow);
+        }
     }
 
     .info {
         flex: 1;
+        max-width: 67%;
+        margin-right: auto;
 
         .name {
             margin: 0;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
         }
 
         .hyper-input {

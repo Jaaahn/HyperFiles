@@ -77,7 +77,7 @@ export default {
         position: fixed;
         bottom: 0;
         width: 100%;
-        max-height: 70vh;
+        max-height: 90vh;
         overflow-y: auto;
         transform: translateY(100%);
 
@@ -107,6 +107,10 @@ export default {
             .fullHeight {
                 height: 70vh;
                 overflow: auto;
+            }
+
+            :last-child {
+                margin-bottom: 0;
             }
         }
     }

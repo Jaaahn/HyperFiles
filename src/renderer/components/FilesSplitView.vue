@@ -148,6 +148,7 @@ export default {
         async selectLocalPath() {
             let info = await dialog.showOpenDialog({
                 properties: ["openDirectory"],
+                defaultPath: this.paths.local,
             });
 
             let path = info.filePaths[0];
@@ -176,6 +177,7 @@ export default {
         border-radius: var(--section-border-radius);
         padding: var(--element-padding);
         position: relative;
+        max-width: calc((100% - 10px) / 2);
 
         // So that .files expands exactly to the height of this view
         display: flex;

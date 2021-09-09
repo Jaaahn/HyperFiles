@@ -183,8 +183,8 @@ export default {
     width: min(2000px, 100%) !important;
     margin: 0;
     padding: 10px;
-    height: calc(100vh - 80px);
-    top: 80px;
+    height: calc(100vh - 60px);
+    top: 60px;
     display: flex;
     flex-direction: column;
     position: relative;

@@ -1,5 +1,5 @@
 <template>
-    <Header v-model="selectedTab" :tabs="tabs" />
+    <Header v-model="selectedTab" :tabs="tabs" :currentTabInfo="currentTabInfo" />
 
     <hy-main id="home" maxWidth="2000px">
         <FilesSplitView v-if="currentTabInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" :paths="paths" :loadingFiles="loadingFiles" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" @updatePaths="updatePaths" />
@@ -49,28 +49,44 @@ export default {
     watch: {
         currentTabInfo: {
             async handler() {
-                // Close previous connect
-                if (this.currentClient) {
-                    await this.currentClient.end();
+                try {
+                    this.loadingFiles.remote = true;
+                    this.loadingFiles.local = true;
+
+                    // Close previous connect
+                    if (this.currentClient != null) {
+                        await this.currentClient.end();
+                        this.currentClient = null;
+                    }
+
+                    // Initialize default paths
+                    this.paths.remote = this.currentTabInfo.remote.path;
+                    this.paths.local = this.currentTabInfo.local.path;
+
+                    // Connect to new host
+                    this.currentClient = new sftpClient();
+
+                    let remoteConnectConfig = {
+                        host: this.currentTabInfo.remote.host,
+                        username: this.currentTabInfo.remote.username,
+                        port: this.currentTabInfo.remote.port,
+                        privateKey: null,
+                        password: this.currentTabInfo.remote.password,
+                    };
+
+                    if (this.currentTabInfo.remote.privateKeyPath != "") {
+                        remoteConnectConfig.privateKey = fs.readFileSync(this.currentTabInfo.remote.privateKeyPath);
+                    }
+
+                    await this.currentClient.connect(remoteConnectConfig);
+
+                    // List files
+                    this.getRemoteFiles();
+                    this.getLocalFiles();
+                } catch (error) {
+                    console.error(error);
+                    alert("Failed to connect to remote");
                 }
-
-                // Initialize default paths
-                this.paths.remote = this.currentTabInfo.remote.path;
-                this.paths.local = this.currentTabInfo.local.path;
-
-                // Connect to new host
-                this.currentClient = new sftpClient();
-
-                await this.currentClient.connect({
-                    host: this.currentTabInfo.remote.host,
-                    username: this.currentTabInfo.remote.username,
-                    port: this.currentTabInfo.remote.port,
-                    privateKey: fs.readFileSync(this.currentTabInfo.remote.privateKeyPath),
-                });
-
-                // List files
-                this.getRemoteFiles();
-                this.getLocalFiles();
             },
             deep: true,
         },

@@ -1,7 +1,7 @@
-import { ref, reactive, watch } from "vue";
+import { useLocalStorage } from "@vueuse/core";
 import generateId from "./utils/generateId.js";
 
-export const tabs = ref([
+export const tabs = useLocalStorage("sftp-config-tabs", [
     {
         id: generateId(),
         name: "Dokku Test",
@@ -17,5 +17,3 @@ export const tabs = ref([
         },
     },
 ]);
-
-watch(tabs, (value) => console.log(value));

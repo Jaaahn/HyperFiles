@@ -1,12 +1,14 @@
 <template>
     <div id="header">
-        <hy-select :modelValue="modelValue" @update:modelValue="$emit('update:modelValue', $event)">
-            <option value="">Please choose</option>
+        <hy-flex-container>
+            <hy-select :modelValue="modelValue" @update:modelValue="$emit('update:modelValue', $event)">
+                <option value="">Please choose</option>
 
-            <option v-for="tab in tabs" :value="tab.id" :key="tab.id">{{ tab.name }}</option>
-        </hy-select>
+                <option v-for="tab in tabs" :value="tab.id" :key="tab.id">{{ tab.name }}</option>
+            </hy-select>
 
-        <h3 v-if="currentTabInfo">Connected to {{ currentTabInfo.name }}</h3>
+            <hy-button @click="$router.push('/profiles')" :extend="false"> <i class="icon-bars"></i> </hy-button>
+        </hy-flex-container>
     </div>
 </template>
 

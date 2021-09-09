@@ -14,16 +14,16 @@
         </div>
 
         <div v-if="renaming.active == false" class="actions">
-            <hy-button v-if="type == 'local'" @click="upload()" type="transparent"><i class="icon-upload"></i></hy-button>
-            <hy-button v-if="type == 'remote'" @click="download()" type="transparent"><i class="icon-download"></i></hy-button>
+            <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent"><i class="icon-upload"></i></hy-button>
+            <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent"><i class="icon-download"></i></hy-button>
 
-            <hy-button @click="deleteObject()" type="transparent"><i class="icon-trash"></i></hy-button>
+            <hy-button @click="deleteObject()" :loading="loading.delete" type="transparent"><i class="icon-trash"></i></hy-button>
 
             <hy-button @click="renaming.active = true" type="transparent"><i class="icon-pen"></i></hy-button>
         </div>
         <div v-else class="actions">
-            <hy-button @click="rename()" type="light-green"><i class="icon-check"></i></hy-button>
-            <hy-button @click="resetRename()" type="light-red"><i class="icon-cross"></i></hy-button>
+            <hy-button @click="rename()" :loading="loading.rename" type="transparent"><i class="icon-check"></i></hy-button>
+            <hy-button @click="resetRename()" type="transparent"><i class="icon-cross"></i></hy-button>
         </div>
     </div>
 </template>
@@ -46,6 +46,11 @@ export default {
             renaming: {
                 active: false,
                 newVal: this.file.name,
+            },
+            loading: {
+                transfer: false,
+                delete: false,
+                rename: false,
             },
         };
     },
@@ -70,6 +75,8 @@ export default {
     },
     methods: {
         async upload() {
+            this.loading.transfer = true;
+
             // Remote path must include a valid filename
             let remoteFilePath = pathModule.join(this.paths.remote, this.file.name);
 
@@ -82,8 +89,12 @@ export default {
                 console.error(error);
                 alert("Error while uploading");
             }
+
+            this.loading.transfer = false;
         },
         async download() {
+            this.loading.transfer = true;
+
             // Local path must include a valid filename
             let localFilePath = pathModule.join(this.paths.local, this.file.name);
 
@@ -95,9 +106,12 @@ export default {
                 console.error(error);
                 alert("Error while downloading");
             }
+
+            this.loading.transfer = false;
         },
         async deleteObject() {
             if (!confirm(`Shure to delete '${this.file.name}' from ${this.type}?`)) return;
+            this.loading.delete = true;
 
             try {
                 if (this.type == "remote") {
@@ -115,8 +129,12 @@ export default {
                 console.error(error);
                 alert("Error while deleting file");
             }
+
+            this.loading.delete = false;
         },
         async rename() {
+            this.loading.rename = true;
+
             let newFilePath = pathModule.join(pathModule.dirname(this.file.path), this.renaming.newVal);
 
             try {
@@ -131,6 +149,8 @@ export default {
                 console.error(error);
                 alert("Error while deleting file");
             }
+
+            this.loading.rename = false;
         },
         resetRename() {
             this.renaming.active = false;

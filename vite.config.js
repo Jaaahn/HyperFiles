@@ -7,6 +7,7 @@ export default {
     plugins: [vue()],
     base: "",
     root: "./src/",
+    publicDir: "./renderer/public/",
     build: {
         outDir: "../vue-dist/",
     },

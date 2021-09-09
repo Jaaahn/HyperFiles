@@ -18,6 +18,8 @@ import { tabs } from "../state.js";
 import Header from "../components/Header.vue";
 import FilesSplitView from "../components/FilesSplitView.vue";
 
+import _ from "lodash";
+
 export default {
     name: "FTP",
     data() {
@@ -57,12 +59,14 @@ export default {
                 let files = await this.currentClient.list(dirPath);
 
                 // Include file path in file info
-                this.remoteFiles = files.map((file) => {
+                let formatedFiles = files.map((file) => {
                     return {
                         ...file,
                         path: pathModule.join(dirPath, file.name),
                     };
                 });
+
+                this.remoteFiles = _.sortBy(formatedFiles, ["name"]);
 
                 this.paths.remoteIsInvalid = false;
             } catch (error) {
@@ -90,7 +94,7 @@ export default {
                 let fileNames = await fsp.readdir(dirPath);
 
                 // Format local files to adapt remote file syntax
-                this.localFiles = fileNames.map((fileName) => {
+                let formatedFiles = fileNames.map((fileName) => {
                     let stats = fs.statSync(pathModule.join(dirPath, fileName));
 
                     let type;
@@ -111,6 +115,8 @@ export default {
                         path: pathModule.join(dirPath, fileName),
                     };
                 });
+
+                this.localFiles = _.sortBy(formatedFiles, ["name"]);
 
                 this.paths.localIsInvalid = false;
             } catch (error) {

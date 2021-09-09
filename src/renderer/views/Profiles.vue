@@ -11,6 +11,7 @@
 
                 <hy-button type="transparent" :extend="false" @click="editProfile(tab.id)"> <i class="icon-pen"></i> </hy-button>
                 <hy-button type="transparent" :extend="false" @click="deleteProfile(tab.id)"> <i class="icon-trash"></i> </hy-button>
+                <hy-button type="transparent" :extend="false" @click="cloneProfile(tab.id)"> <i class="icon-copy"></i> </hy-button>
                 <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${tab.id}`)" id="openBtn"> <i class="icon-chevron-down"></i> </hy-button>
             </hy-flex-container>
         </hy-section>
@@ -30,6 +31,8 @@ import Modal from "../components/Modal.vue";
 import { tabs } from "../state.js";
 import generateId from "../utils/generateId.js";
 
+import _ from "lodash";
+
 export default {
     name: "Profiles",
     data() {
@@ -40,6 +43,11 @@ export default {
             },
             tabs,
         };
+    },
+    computed: {
+        sortedProfiles() {
+            return _.sortBy(this.tabs, ["id"]);
+        },
     },
     methods: {
         createNewProfile() {
@@ -63,6 +71,14 @@ export default {
 
             this.editProfile(id);
         },
+        cloneProfile(profileId) {
+            let profile = this.tabs.find((tab) => tab.id == profileId);
+            let profileClone = _.cloneDeep(profile);
+
+            profileClone.id = generateId();
+
+            this.tabs.push(profileClone);
+        },
         editProfile(profileId) {
             this.editing.profile = this.tabs.find((tab) => tab.id == profileId);
             this.editing.open = true;
@@ -70,6 +86,8 @@ export default {
         deleteProfile(profileId) {
             this.editing.profile = false;
             let profile = this.tabs.find((tab) => tab.id == profileId);
+
+            if (!confirm(`Shure to delete "${profile.name}"?`)) return;
 
             let index = this.tabs.indexOf(profile);
             this.tabs.splice(index, 1);

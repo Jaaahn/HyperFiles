@@ -2,6 +2,7 @@
 
 const { app, BrowserWindow } = require("electron");
 require("@electron/remote/main").initialize();
+let path = require("path");
 
 function createWindow() {
     const window = new BrowserWindow({
@@ -12,6 +13,7 @@ function createWindow() {
             enableRemoteModule: true,
             contextIsolation: false,
         },
+        icon: path.join(__dirname, "icons", "icon.iconset", "icon.png"),
     });
 
     if (app.isPackaged) {

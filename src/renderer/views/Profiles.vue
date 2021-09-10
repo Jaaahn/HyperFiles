@@ -17,6 +17,11 @@
         </hy-section>
 
         <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
+
+        <hy-flex-container>
+            <hy-button @click="exportConfig()" :disabled="tabs.length == 0">Export Config</hy-button>
+            <hy-button @click="importConfig()">Import Config</hy-button>
+        </hy-flex-container>
     </hy-main>
 
     <Modal :open="editing.open" @close="editing.open = false">
@@ -32,6 +37,9 @@ import { tabs } from "../state.js";
 import generateId from "../utils/generateId.js";
 
 import _ from "lodash";
+
+let fsp = require("fs/promises");
+const { dialog } = require("@electron/remote");
 
 export default {
     name: "Profiles",
@@ -91,6 +99,45 @@ export default {
 
             let index = this.tabs.indexOf(profile);
             this.tabs.splice(index, 1);
+        },
+        exportConfig() {
+            let date = new Date().toLocaleString();
+            let element = document.createElement("a");
+
+            // Create element
+            element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(this.tabs, null, "    ")));
+            element.setAttribute("download", "SFTP Config " + date + ".json");
+            element.style.display = "none";
+            document.body.appendChild(element);
+
+            // Download and remove element
+            element.click();
+            document.body.removeChild(element);
+        },
+        async importConfig() {
+            try {
+                let path = (
+                    await dialog.showOpenDialog({
+                        defaultPath: require("os").homedir(),
+                        title: "This action will NOT override your current profiles",
+                        message: "This action will NOT override your current profiles",
+                        properties: ["openFile"],
+                    })
+                ).filePaths[0];
+
+                if (path == "" || !path) return;
+
+                let fileString = await fsp.readFile(path, "utf8");
+                let fileObject = JSON.parse(fileString);
+
+                fileObject.forEach((profile) => {
+                    profile.id = generateId();
+                    this.tabs.push(profile);
+                });
+            } catch (error) {
+                console.error(error);
+                alert("Error while reading config");
+            }
         },
     },
     components: {

@@ -37,7 +37,6 @@
 </template>
 
 <script>
-let fsp = require("fs/promises");
 let pathModule = require("path");
 const { dialog } = require("@electron/remote");
 

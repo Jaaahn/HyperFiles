@@ -60,7 +60,7 @@ export default {
                     path: "/",
                     host: "",
                     port: "22",
-                    username: "root",
+                    username: "",
                     privateKeyPath: "",
                     password: "",
                 },

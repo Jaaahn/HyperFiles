@@ -35,11 +35,13 @@ import Modal from "../components/Modal.vue";
 
 import { tabs } from "../state.js";
 import generateId from "../utils/generateId.js";
+import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 import _ from "lodash";
 
 let fsp = require("fs/promises");
-const { dialog } = require("@electron/remote");
+let { dialog } = require("@electron/remote");
+let keytar = require("keytar");
 
 export default {
     name: "Profiles",
@@ -70,7 +72,6 @@ export default {
                     port: "22",
                     username: "",
                     privateKeyPath: "",
-                    password: "",
                 },
                 local: {
                     path: "/",
@@ -143,6 +144,18 @@ export default {
     components: {
         EditProfile,
         Modal,
+    },
+    async created() {
+        // Remove unsafe password and store it in the system's keychain
+        for (let i = 0; i < this.tabs.length; i++) {
+            let profile = this.tabs[i];
+
+            if (profile.remote.password && profile.remote.password != "") {
+                await keytar.setPassword("de.janbahlinger.sftp-client", getAccountInfoString(profile), profile.remote.password);
+            }
+
+            delete this.tabs[i].remote.password;
+        }
     },
 };
 </script>

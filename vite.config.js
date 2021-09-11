@@ -12,6 +12,6 @@ export default {
         outDir: "../vue-dist/",
     },
     optimizeDeps: {
-        exclude: ["fs", "fs/promises", "path"],
+        exclude: ["fs", "fs/promises", "path", "keytar", "crypto"],
     },
 };

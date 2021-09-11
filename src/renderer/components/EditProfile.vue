@@ -6,44 +6,53 @@
         <hy-input v-model="profileData.name" placeholder="Name of profile" />
 
         <h2>Local</h2>
-        <p class="label">Local starting path</p>
+        <p class="label">Starting path</p>
         <hy-flex-container>
             <hy-input v-model="profileData.local.path" placeholder="Local starting path" />
             <hy-button @click="selectLocalPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
         </hy-flex-container>
 
         <h2>Remote</h2>
-        <p class="label">Remote starting path</p>
-        <hy-input v-model="profileData.remote.path" placeholder="Remote starting path" />
+        <p class="label">Starting path</p>
+        <hy-input v-model="profileData.remote.path" placeholder="Starting path" />
 
-        <p class="label">Remote host</p>
-        <hy-input v-model="profileData.remote.host" placeholder="Remote host name" />
+        <p class="label">Hostname</p>
+        <hy-input v-model="profileData.remote.host" placeholder="Hostname" />
 
-        <p class="label">Remote port</p>
-        <hy-input v-model="profileData.remote.port" placeholder="Remote port" />
+        <p class="label">Port</p>
+        <hy-input v-model="profileData.remote.port" placeholder="Port" />
 
-        <p class="label">Remote username</p>
-        <hy-input v-model="profileData.remote.username" placeholder="Remote username" />
+        <p class="label">Username</p>
+        <hy-input v-model="profileData.remote.username" placeholder="Username" />
 
-        <p class="label">Remote private key path</p>
+        <p class="label">Path to private key</p>
         <hy-flex-container>
-            <hy-input v-model="profileData.remote.privateKeyPath" placeholder="Remote private key path" />
+            <hy-input v-model="profileData.remote.privateKeyPath" placeholder="Path to private key (on your local system)" />
             <hy-button @click="selectPrivateKeyPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
         </hy-flex-container>
 
-        <p class="label">Or: password for remote</p>
-        <hy-input v-model="profileData.remote.password" placeholder="Remote password" />
+        <p class="label">Passphrase</p>
+        <hy-input v-model="remotePassword" @blur.native="updateRemotePassword()" placeholder="Remote password" type="password" id="remotePassword" />
+        <p class="small">Your password will be stored encrypted in your system's keychain.</p>
     </div>
 </template>
 
 <script>
 let pathModule = require("path");
-const { dialog } = require("@electron/remote");
+let { dialog } = require("@electron/remote");
+let keytar = require("keytar");
+
+import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 export default {
     name: "EditProfile",
     props: {
         profileData: Object,
+    },
+    data() {
+        return {
+            remotePassword: "",
+        };
     },
     methods: {
         async selectLocalPath() {
@@ -62,11 +71,29 @@ export default {
 
             this.profileData.remote.privateKeyPath = result.filePaths[0];
         },
+        async updateRemotePassword() {
+            if (this.remotePassword == "") await keytar.deletePassword("de.janbahlinger.sftp-client", getAccountInfoString(this.profileData));
+            else {
+                await keytar.setPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.profileData), this.remotePassword);
+            }
+        },
+    },
+    async created() {
+        this.remotePassword = await keytar.getPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.profileData));
     },
 };
 </script>
 
 <style lang="scss" scoped>
 #editProfile {
+    #remotePassword {
+        margin-bottom: 0;
+    }
+
+    p.small {
+        margin-top: 5px;
+        color: gray;
+        font-size: 18px;
+    }
 }
 </style>

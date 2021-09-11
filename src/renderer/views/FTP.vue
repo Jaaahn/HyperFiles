@@ -12,8 +12,10 @@ let sftpClient = require("ssh2-sftp-client");
 let fs = require("fs");
 let fsp = require("fs/promises");
 let pathModule = require("path");
+let keytar = require("keytar");
 
 import { tabs } from "../state.js";
+import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 import Header from "../components/Header.vue";
 import FilesSplitView from "../components/FilesSplitView.vue";
@@ -158,7 +160,7 @@ export default {
                 username: this.currentTabInfo.remote.username,
                 port: this.currentTabInfo.remote.port,
                 privateKey: null,
-                password: this.currentTabInfo.remote.password,
+                password: await keytar.getPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.currentTabInfo)),
             };
 
             // Use private key if path is present

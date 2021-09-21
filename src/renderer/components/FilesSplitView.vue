@@ -14,6 +14,10 @@
                     <hy-button @click="selectLocalPath()" :extend="false" type="transparent">
                         <i class="icon-target"></i>
                     </hy-button>
+                    <hy-button @click="hideDotFiles.local = !hideDotFiles.local" :extend="false" type="transparent">
+                        <i class="icon-eye-slash" v-if="hideDotFiles.local == true" title="Switch to displaying all files"></i>
+                        <i class="icon-eye" v-if="hideDotFiles.local == false" title="Switch to hiding Dotfiles"></i>
+                    </hy-button>
                     <hy-button @click="openNewDirDialogue('local')" :extend="false" type="transparent">
                         <i class="icon-folder-plus"></i>
                     </hy-button>
@@ -26,11 +30,12 @@
             <div class="viewInfo" v-else-if="paths.localIsInvalid">
                 <h3>Invalid Path</h3>
             </div>
-            <div class="viewInfo" v-else-if="localFiles.length == 0">
+            <div class="viewInfo" v-else-if="filteredFiles.local.length == 0">
                 <h3>Empty Directory</h3>
+                <p v-if="localFiles.length != 0">There are hidden Dotfiles</p>
             </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in localFiles" :file="file" :client="client" :paths="paths" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'local')" />
+                <FileItem class="file" v-for="file in filteredFiles.local" :file="file" :client="client" :paths="paths" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'local')" />
             </div>
         </div>
 
@@ -45,6 +50,10 @@
 
                     <input :value="paths.remote" @keyup="updatePaths($event, 'remote')" />
 
+                    <hy-button @click="hideDotFiles.remote = !hideDotFiles.remote" :extend="false" type="transparent">
+                        <i class="icon-eye-slash" v-if="hideDotFiles.remote == true" title="Switch to displaying all files"></i>
+                        <i class="icon-eye" v-if="hideDotFiles.remote == false" title="Switch to hiding Dotfiles"></i>
+                    </hy-button>
                     <hy-button @click="openNewDirDialogue('remote')" :extend="false" type="transparent">
                         <i class="icon-folder-plus"></i>
                     </hy-button>
@@ -57,11 +66,12 @@
             <div class="viewInfo" v-else-if="paths.remoteIsInvalid">
                 <h3>Invalid Path</h3>
             </div>
-            <div class="viewInfo" v-else-if="remoteFiles.length == 0">
+            <div class="viewInfo" v-else-if="filteredFiles.remote.length == 0">
                 <h3>Empty Directory</h3>
+                <p v-if="remoteFiles.length != 0">There are hidden Dotfiles</p>
             </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in remoteFiles" :file="file" :client="client" :paths="paths" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'remote')" />
+                <FileItem class="file" v-for="file in filteredFiles.remote" :file="file" :client="client" :paths="paths" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'remote')" />
             </div>
         </div>
     </div>
@@ -94,6 +104,10 @@ export default {
     },
     data() {
         return {
+            hideDotFiles: {
+                local: true,
+                remote: false,
+            },
             newDir: {
                 open: false,
                 name: "",
@@ -101,6 +115,14 @@ export default {
                 loading: false,
             },
         };
+    },
+    computed: {
+        filteredFiles() {
+            return {
+                local: this.filterFiles(this.localFiles, this.hideDotFiles.local),
+                remote: this.filterFiles(this.remoteFiles, this.hideDotFiles.remote),
+            };
+        },
     },
     methods: {
         async createNewDir() {
@@ -156,6 +178,12 @@ export default {
             if (path == undefined) return;
 
             this.$emit("updatePaths", path, "local");
+        },
+        filterFiles(files, filterDotFilesOut) {
+            return files.filter((file) => {
+                if (filterDotFilesOut == false) return true;
+                return file.name[0] != "."; // Return true if filename doesn't start with "."
+            });
         },
     },
     components: {
@@ -227,9 +255,16 @@ export default {
 
         .viewInfo {
             position: absolute;
-            top: 50%;
+            top: calc(50% + 40px); // Header height
             left: 50%;
             transform: translate(-50%, -50%);
+
+            h3,
+            p {
+                text-align: center;
+                margin: 0;
+                padding: 0;
+            }
         }
     }
 }

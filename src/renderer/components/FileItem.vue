@@ -77,6 +77,7 @@ export default {
         },
     },
     methods: {
+        // Filter regex (only matches non-Dotfiles): /^(?!\.).*/gm
         async upload() {
             this.loading.transfer = true;
 

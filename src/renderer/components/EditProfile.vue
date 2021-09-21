@@ -79,7 +79,7 @@ export default {
         },
     },
     async created() {
-        this.remotePassword = await keytar.getPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.profileData));
+        this.remotePassword = (await keytar.getPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.profileData))) ?? "";
     },
 };
 </script>

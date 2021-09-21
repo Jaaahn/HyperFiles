@@ -14,22 +14,25 @@
         </div>
 
         <div v-if="renaming.active == false" class="actions">
-            <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent"><i class="icon-upload"></i></hy-button>
-            <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent"><i class="icon-download"></i></hy-button>
+            <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent" title="Upload file (override any remote files with same name)"><i class="icon-upload"></i></hy-button>
+            <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent" title="Download file (override any local files with same name)"><i class="icon-download"></i></hy-button>
 
-            <hy-button @click="deleteObject()" :loading="loading.delete" type="transparent"><i class="icon-trash"></i></hy-button>
+            <hy-button v-if="type == 'local'" @click="openFile()" type="transparent" title="Open file in default App"><i class="icon-presentation"></i></hy-button>
 
-            <hy-button @click="renaming.active = true" type="transparent"><i class="icon-pen"></i></hy-button>
+            <hy-button @click="deleteObject()" :loading="loading.delete" type="transparent" title="Delete file"><i class="icon-trash"></i></hy-button>
+
+            <hy-button @click="renaming.active = true" type="transparent" title="Open rename dialogue"><i class="icon-pen"></i></hy-button>
         </div>
         <div v-else class="actions">
-            <hy-button @click="rename()" :loading="loading.rename" type="transparent"><i class="icon-check"></i></hy-button>
-            <hy-button @click="resetRename()" type="transparent"><i class="icon-cross"></i></hy-button>
+            <hy-button @click="rename()" :loading="loading.rename" type="transparent" title="Save changes"><i class="icon-check"></i></hy-button>
+            <hy-button @click="resetRename()" type="transparent" title="Cancel and discard changes"><i class="icon-cross"></i></hy-button>
         </div>
     </div>
 </template>
 
 <script>
 let fsp = require("fs/promises");
+let shell = require("electron").shell;
 let pathModule = require("path");
 
 export default {
@@ -151,6 +154,16 @@ export default {
             }
 
             this.loading.rename = false;
+        },
+        async openFile() {
+            if (this.type != "local") return;
+
+            try {
+                await shell.openPath(this.file.path);
+            } catch (error) {
+                console.error(error);
+                alert("Error while opening file");
+            }
         },
         resetRename() {
             this.renaming.active = false;

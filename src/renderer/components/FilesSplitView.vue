@@ -98,7 +98,7 @@ export default {
         remoteFiles: Array,
         localFiles: Array,
         client: Object,
-        tabInfo: Object,
+        profileInfo: Object,
         paths: Object,
         loadingFiles: Object,
     },

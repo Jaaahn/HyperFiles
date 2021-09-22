@@ -214,7 +214,7 @@ export default {
 
     .info {
         flex: 1;
-        max-width: 67%;
+        max-width: 67%; // TODO: Adjust for local "open in default app" btn !!
         margin-right: auto;
 
         .name {

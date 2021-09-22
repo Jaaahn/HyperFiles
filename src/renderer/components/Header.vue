@@ -3,7 +3,7 @@
         <hy-flex-container>
             <hy-button @click="$router.push('/')" :extend="false" type="transparent"> <i class="icon-chevron-down"></i> </hy-button>
 
-            <h3>Connected to {{ currentTabInfo.name }}</h3>
+            <h3>Connected to {{ currentProfileInfo.name }}</h3>
 
             <hy-button @click="$emit('reload')" :extend="false" type="transparent">Reload</hy-button>
         </hy-flex-container>
@@ -14,8 +14,7 @@
 export default {
     name: "Header",
     props: {
-        tabs: Array,
-        currentTabInfo: null,
+        currentProfileInfo: null,
     },
     data() {
         return {};

@@ -2,24 +2,24 @@
     <hy-main id="profiles">
         <h1>Launch new connection from favorites</h1>
 
-        <hy-section class="profile" v-for="tab in tabs" @dblclick.native="$router.push(`/ftp/${tab.id}`)" :key="tab.id">
+        <hy-section class="profile" v-for="profile in profiles" @dblclick.native="$router.push(`/ftp/${profile.id}`)" :key="profile.id">
             <hy-flex-container>
                 <div class="name">
-                    <h3>{{ tab.name }}</h3>
-                    <p>{{ tab.remote.host }} at {{ tab.remote.port }}</p>
+                    <h3>{{ profile.name }}</h3>
+                    <p>{{ profile.remote.host }} at {{ profile.remote.port }}</p>
                 </div>
 
-                <hy-button type="transparent" :extend="false" @click="editProfile(tab.id)"> <i class="icon-pen"></i> </hy-button>
-                <hy-button type="transparent" :extend="false" @click="deleteProfile(tab.id)"> <i class="icon-trash"></i> </hy-button>
-                <hy-button type="transparent" :extend="false" @click="cloneProfile(tab.id)"> <i class="icon-copy"></i> </hy-button>
-                <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${tab.id}`)" id="openBtn"> <i class="icon-chevron-down"></i> </hy-button>
+                <hy-button type="transparent" :extend="false" @click="editProfile(profile.id)"> <i class="icon-pen"></i> </hy-button>
+                <hy-button type="transparent" :extend="false" @click="deleteProfile(profile.id)"> <i class="icon-trash"></i> </hy-button>
+                <hy-button type="transparent" :extend="false" @click="cloneProfile(profile.id)"> <i class="icon-copy"></i> </hy-button>
+                <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${profile.id}`)" id="openBtn"> <i class="icon-chevron-down"></i> </hy-button>
             </hy-flex-container>
         </hy-section>
 
         <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
 
         <hy-flex-container>
-            <hy-button @click="exportConfig()" :disabled="tabs.length == 0">Export Config</hy-button>
+            <hy-button @click="exportConfig()" :disabled="profiles.length == 0">Export Config</hy-button>
             <hy-button @click="importConfig()">Import Config</hy-button>
         </hy-flex-container>
     </hy-main>
@@ -33,7 +33,7 @@
 import EditProfile from "../components/EditProfile.vue";
 import Modal from "../components/Modal.vue";
 
-import { tabs } from "../state.js";
+import { profiles } from "../state.js";
 import generateId from "../utils/generateId.js";
 import getAccountInfoString from "../utils/getAccountInfoString.js";
 
@@ -51,19 +51,19 @@ export default {
                 open: false,
                 profile: null,
             },
-            tabs,
+            profiles,
         };
     },
     computed: {
         sortedProfiles() {
-            return _.sortBy(this.tabs, ["id"]);
+            return _.sortBy(this.profiles, ["id"]);
         },
     },
     methods: {
         createNewProfile() {
             let id = generateId();
 
-            this.tabs.push({
+            this.profiles.push({
                 id,
                 name: "New profile",
                 remote: {
@@ -81,32 +81,32 @@ export default {
             this.editProfile(id);
         },
         cloneProfile(profileId) {
-            let profile = this.tabs.find((tab) => tab.id == profileId);
+            let profile = this.profiles.find((profile) => profile.id == profileId);
             let profileClone = _.cloneDeep(profile);
 
             profileClone.id = generateId();
 
-            this.tabs.push(profileClone);
+            this.profiles.push(profileClone);
         },
         editProfile(profileId) {
-            this.editing.profile = this.tabs.find((tab) => tab.id == profileId);
+            this.editing.profile = this.profiles.find((profile) => profile.id == profileId);
             this.editing.open = true;
         },
         deleteProfile(profileId) {
             this.editing.profile = false;
-            let profile = this.tabs.find((tab) => tab.id == profileId);
+            let profile = this.profiles.find((profile) => profile.id == profileId);
 
             if (!confirm(`Shure to delete "${profile.name}"?`)) return;
 
-            let index = this.tabs.indexOf(profile);
-            this.tabs.splice(index, 1);
+            let index = this.profiles.indexOf(profile);
+            this.profiles.splice(index, 1);
         },
         exportConfig() {
             let date = new Date().toLocaleString();
             let element = document.createElement("a");
 
             // Create element
-            element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(this.tabs, null, "    ")));
+            element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(JSON.stringify(this.profiles, null, "    ")));
             element.setAttribute("download", "SFTP Config " + date + ".json");
             element.style.display = "none";
             document.body.appendChild(element);
@@ -133,7 +133,7 @@ export default {
 
                 fileObject.forEach((profile) => {
                     profile.id = generateId();
-                    this.tabs.push(profile);
+                    this.profiles.push(profile);
                 });
             } catch (error) {
                 console.error(error);
@@ -147,14 +147,14 @@ export default {
     },
     async created() {
         // Migrate profiles
-        for (let i = 0; i < this.tabs.length; i++) {
-            let profile = this.tabs[i];
+        for (let i = 0; i < this.profiles.length; i++) {
+            let profile = this.profiles[i];
 
             // Remove unsafe password and store it in the system's keychain
             if (profile.remote.password && profile.remote.password != "") {
                 await keytar.setPassword("de.janbahlinger.sftp-client", getAccountInfoString(profile), profile.remote.password);
             }
-            delete this.tabs[i].remote.password;
+            delete this.profiles[i].remote.password;
         }
     },
 };

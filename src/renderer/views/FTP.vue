@@ -1,8 +1,8 @@
 <template>
-    <Header :tabs="tabs" :currentTabInfo="currentTabInfo" @reload="reloadFiles()" />
+    <Header :currentProfileInfo="currentProfileInfo" @reload="reloadFiles()" />
 
     <hy-main id="ftp" maxWidth="2000px">
-        <FilesSplitView v-if="currentTabInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :tabInfo="currentTabInfo" :paths="paths" :loadingFiles="loadingFiles" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" @updatePaths="updatePaths" />
+        <FilesSplitView v-if="currentProfileInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :profileInfo="currentProfileInfo" :paths="paths" :loadingFiles="loadingFiles" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" @updatePaths="updatePaths" />
     </hy-main>
 </template>
 
@@ -14,7 +14,7 @@ let fsp = require("fs/promises");
 let pathModule = require("path");
 let keytar = require("keytar");
 
-import { tabs } from "../state.js";
+import { profiles } from "../state.js";
 import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 import Header from "../components/Header.vue";
@@ -26,7 +26,7 @@ export default {
     name: "FTP",
     data() {
         return {
-            currentTabInfo: null,
+            currentProfileInfo: null,
             currentClient: null,
             remoteFiles: [],
             localFiles: [],
@@ -40,13 +40,13 @@ export default {
                 local: true,
                 remote: true,
             },
-            tabs,
+            profiles,
         };
     },
     methods: {
         async getRemoteFiles() {
             try {
-                console.log("Fetching remote files for:", this.currentTabInfo, this.paths.remote);
+                console.log("Fetching remote files for:", this.currentProfileInfo, this.paths.remote);
                 this.loadingFiles.remote = true;
                 let dirPath = this.paths.remote;
 
@@ -80,7 +80,7 @@ export default {
         },
         async getLocalFiles() {
             try {
-                console.log("Fetching local files for:", this.currentTabInfo, this.paths.local);
+                console.log("Fetching local files for:", this.currentProfileInfo, this.paths.local);
                 this.loadingFiles.local = true;
 
                 let dirPath = this.paths.local;
@@ -143,29 +143,29 @@ export default {
         },
     },
     async created() {
-        // Get tab info
-        this.currentTabInfo = this.tabs.find((tab) => tab.id == this.$route.params.profileId);
-        console.log("Current tab info", this.currentTabInfo);
+        // Get profile info
+        this.currentProfileInfo = this.profiles.find((profile) => profile.id == this.$route.params.profileId);
+        console.log("Current profile info", this.currentProfileInfo);
 
         // Initialize default paths
-        this.paths.remote = this.currentTabInfo.remote.path;
-        this.paths.local = this.currentTabInfo.local.path;
+        this.paths.remote = this.currentProfileInfo.remote.path;
+        this.paths.local = this.currentProfileInfo.local.path;
 
         try {
             // Connect to host
             this.currentClient = new sftpClient();
 
             let remoteConnectConfig = {
-                host: this.currentTabInfo.remote.host,
-                username: this.currentTabInfo.remote.username,
-                port: this.currentTabInfo.remote.port,
+                host: this.currentProfileInfo.remote.host,
+                username: this.currentProfileInfo.remote.username,
+                port: this.currentProfileInfo.remote.port,
                 privateKey: null,
-                password: await keytar.getPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.currentTabInfo)),
+                password: await keytar.getPassword("de.janbahlinger.sftp-client", getAccountInfoString(this.currentProfileInfo)),
             };
 
             // Use private key if path is present
-            if (this.currentTabInfo.remote.privateKeyPath != "") {
-                remoteConnectConfig.privateKey = fs.readFileSync(this.currentTabInfo.remote.privateKeyPath);
+            if (this.currentProfileInfo.remote.privateKeyPath != "") {
+                remoteConnectConfig.privateKey = fs.readFileSync(this.currentProfileInfo.remote.privateKeyPath);
             }
 
             await this.currentClient.connect(remoteConnectConfig);

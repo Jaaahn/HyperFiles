@@ -187,8 +187,8 @@ export default {
     &.renamingActive {
         background-color: var(--color-gray-3);
 
-        .actions .hyper-button {
-            opacity: 1;
+        .actions {
+            max-width: 100%;
         }
     }
 
@@ -221,6 +221,7 @@ export default {
 
         .name {
             margin: 0;
+
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
@@ -239,16 +240,21 @@ export default {
             margin: 0;
             font-size: 15px;
             color: gray;
+
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+            width: 100%;
         }
     }
 
     .actions {
         display: flex;
+        overflow-x: hidden;
         gap: 5px;
-        min-width: max-content;
+        max-width: 0px;
 
         .hyper-button {
-            opacity: 0;
             margin: 0;
 
             &:deep(button) {

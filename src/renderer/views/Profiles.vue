@@ -146,14 +146,14 @@ export default {
         Modal,
     },
     async created() {
-        // Remove unsafe password and store it in the system's keychain
+        // Migrate profiles
         for (let i = 0; i < this.tabs.length; i++) {
             let profile = this.tabs[i];
 
+            // Remove unsafe password and store it in the system's keychain
             if (profile.remote.password && profile.remote.password != "") {
                 await keytar.setPassword("de.janbahlinger.sftp-client", getAccountInfoString(profile), profile.remote.password);
             }
-
             delete this.tabs[i].remote.password;
         }
     },

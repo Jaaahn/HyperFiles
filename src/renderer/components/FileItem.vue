@@ -181,6 +181,7 @@ export default {
     display: flex;
     align-items: center;
     gap: 20px;
+    width: 100%;
 
     &:hover,
     &.renamingActive {
@@ -198,6 +199,7 @@ export default {
     .icons i {
         font-size: 25px;
         padding-left: 10px;
+        min-width: max-content;
 
         &.icon-file {
             color: var(--accent-color);
@@ -214,14 +216,15 @@ export default {
 
     .info {
         flex: 1;
-        max-width: 67%; // TODO: Adjust for local "open in default app" btn !!
         margin-right: auto;
+        min-width: 0px;
 
         .name {
             margin: 0;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
+            width: 100%;
         }
 
         .hyper-input {
@@ -242,6 +245,7 @@ export default {
     .actions {
         display: flex;
         gap: 5px;
+        min-width: max-content;
 
         .hyper-button {
             opacity: 0;

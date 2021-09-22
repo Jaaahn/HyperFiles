@@ -4,7 +4,7 @@
             <div class="header">
                 <h3>Local</h3>
 
-                <hy-flex-container>
+                <hy-flex-container :allowBreak="false">
                     <hy-button @click="openParentFolder('local')" :extend="false" :disabled="paths.local == '/'" type="transparent">
                         <i class="icon-chevron-down"></i>
                     </hy-button>
@@ -43,7 +43,7 @@
             <div class="header">
                 <h3>Remote</h3>
 
-                <hy-flex-container>
+                <hy-flex-container :allowBreak="false">
                     <hy-button @click="openParentFolder('remote')" :extend="false" :disabled="paths.remote == '/'" type="transparent">
                         <i class="icon-chevron-down"></i>
                     </hy-button>
@@ -236,6 +236,7 @@ export default {
                     color: gray;
                     font-size: 15px;
                     font-family: monospace;
+                    min-width: 0px;
                 }
 
                 .hyper-button :deep(button) {

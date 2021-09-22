@@ -1,6 +1,6 @@
 <template>
     <div id="header">
-        <hy-flex-container>
+        <hy-flex-container :allowBreak="false">
             <hy-button @click="$router.push('/')" :extend="false" type="transparent"> <i class="icon-chevron-down"></i> </hy-button>
 
             <h3>Connected to {{ currentProfileInfo.name }}</h3>

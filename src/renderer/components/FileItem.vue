@@ -10,7 +10,7 @@
             <p class="name" v-if="!renaming.active" :title="file.name">{{ file.name }}</p>
             <hy-input v-model="renaming.newVal" v-else />
 
-            <p class="details"><i class="icon-clock"></i> {{ new Date(file.modifyTime).toLocaleString() }}</p>
+            <p class="details"><i class="icon-clock"></i> {{ timeDisplay }}</p>
         </div>
 
         <div v-if="renaming.active == false" class="actions">
@@ -74,6 +74,14 @@ export default {
         },
         isLink() {
             return this.file.type == "l";
+        },
+        timeDisplay() {
+            let today = new Date().toLocaleDateString();
+            let fileModifyDate = new Date(this.file.modifyTime).toLocaleDateString();
+
+            if (this.file.modifyTime > new Date().getTime() - 60 * 1000) return "Just Now";
+            if (fileModifyDate == today) return `Today, ${new Date(this.file.modifyTime).toLocaleTimeString()}`;
+            return new Date(this.file.modifyTime).toLocaleString();
         },
     },
     methods: {

@@ -1,11 +1,11 @@
 <template>
     <div id="header">
         <hy-flex-container :allowBreak="false">
-            <hy-button @click="$router.push('/')" :extend="false" type="transparent"> <i class="icon-chevron-down"></i> </hy-button>
+            <hy-button @click="$router.push('/')" :extend="false" type="transparent"> <i class="icon-arrow-down rotate90deg"></i> </hy-button>
 
             <h3>Connected to {{ currentProfileInfo.name }}</h3>
 
-            <hy-button @click="$emit('reload')" :extend="false" type="transparent">Reload</hy-button>
+            <hy-button @click="$emit('reload')" :extend="false" type="transparent"> <i class="icon-rewind"></i> Refresh</hy-button>
         </hy-flex-container>
     </div>
 </template>
@@ -41,10 +41,6 @@ export default {
 
         .hyper-button :deep(button) {
             padding: 10px;
-        }
-
-        i::before {
-            transform: rotate(90deg);
         }
     }
 }

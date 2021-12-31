@@ -5,7 +5,7 @@
 
             <h3>Connected to {{ currentProfileInfo.name }}</h3>
 
-            <hy-button @click="$emit('reload')" :extend="false" type="transparent"> <i class="icon-rewind"></i> Refresh</hy-button>
+            <hy-button @click="$emit('reload')" :extend="false" type="transparent"> <i class="icon-reload"></i> Refresh</hy-button>
         </hy-flex-container>
     </div>
 </template>

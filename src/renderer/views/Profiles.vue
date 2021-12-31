@@ -21,8 +21,8 @@
         <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
 
         <hy-flex-container>
-            <hy-button @click="exportConfig()" :disabled="profiles.length == 0">Export Config</hy-button>
-            <hy-button @click="importConfig()">Import Config</hy-button>
+            <hy-button @click="exportConfig()" :disabled="profiles.length == 0"><i class="icon-share"></i> Export Config</hy-button>
+            <hy-button @click="importConfig()"><i class="icon-import"></i> Import Config</hy-button>
         </hy-flex-container>
     </hy-main>
 

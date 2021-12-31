@@ -2,19 +2,21 @@
     <hy-main id="profiles">
         <h1>Launch new connection from favorites</h1>
 
-        <hy-section class="profile" v-for="profile in profiles" @dblclick.native="$router.push(`/ftp/${profile.id}`)" :key="profile.id">
-            <hy-flex-container>
-                <div class="name">
-                    <h3>{{ profile.name }}</h3>
-                    <p>{{ profile.remote.host }} at {{ profile.remote.port }}</p>
-                </div>
+        <transition-group tag="section" name="profiles" appear>
+            <hy-section class="profile" v-for="profile in sortedProfiles" @dblclick.native="$router.push(`/ftp/${profile.id}`)" :key="profile.id">
+                <hy-flex-container>
+                    <div class="name">
+                        <h3>{{ profile.name }}</h3>
+                        <p>{{ profile.remote.host }} at {{ profile.remote.port }}</p>
+                    </div>
 
-                <hy-button type="transparent" :extend="false" @click="editProfile(profile.id)"> <i class="icon-pen"></i> </hy-button>
-                <hy-button type="transparent" :extend="false" @click="deleteProfile(profile.id)"> <i class="icon-trash"></i> </hy-button>
-                <hy-button type="transparent" :extend="false" @click="cloneProfile(profile.id)"> <i class="icon-copy"></i> </hy-button>
-                <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${profile.id}`)" id="openBtn"> <i class="icon-chevron-down"></i> </hy-button>
-            </hy-flex-container>
-        </hy-section>
+                    <hy-button type="transparent" :extend="false" @click="editProfile(profile.id)"> <i class="icon-pen"></i> </hy-button>
+                    <hy-button type="transparent" :extend="false" @click="deleteProfile(profile.id)"> <i class="icon-trash"></i> </hy-button>
+                    <hy-button type="transparent" :extend="false" @click="cloneProfile(profile.id)"> <i class="icon-copy"></i> </hy-button>
+                    <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${profile.id}`)" id="openBtn"> Connect <i class="icon-chevron-down"></i> </hy-button>
+                </hy-flex-container>
+            </hy-section>
+        </transition-group>
 
         <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
 
@@ -56,7 +58,8 @@ export default {
     },
     computed: {
         sortedProfiles() {
-            return _.sortBy(this.profiles, ["id"]);
+            // Sort by name (alphabetically => requires toLoweCase() hack) and by id if names are identical
+            return _.sortBy(this.profiles, [(profile) => profile.name.toLowerCase(), "id"], ["asc"]);
         },
     },
     methods: {
@@ -85,6 +88,7 @@ export default {
             let profileClone = _.cloneDeep(profile);
 
             profileClone.id = generateId();
+            profileClone.name += " clone";
 
             this.profiles.push(profileClone);
         },
@@ -188,5 +192,22 @@ export default {
     #newBtn {
         margin-top: 50px;
     }
+}
+
+// Animate
+.profiles-leave-to,
+.profiles-enter-from {
+    opacity: 0;
+    transform: scale(0.6);
+}
+
+.profiles-leave-active {
+    transition: all 0.3s ease-in-out;
+    position: absolute;
+    width: calc(100% - 50px);
+}
+
+.profiles-move {
+    transition: all 0.3s ease-in-out;
 }
 </style>

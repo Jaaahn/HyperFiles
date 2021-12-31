@@ -3,7 +3,7 @@
         <div class="icons">
             <i class="icon-file" v-if="file.type == '-'" title="This item is a file"></i>
             <i class="icon-folder" v-if="file.type == 'd'" title="This item is directory. Double click to open"></i>
-            <i class="icon-forward" v-if="file.type == 'l'" title="This item is a link"></i>
+            <i class="icon-link" v-if="file.type == 'l'" title="This item is a link"></i>
         </div>
 
         <div class="info">
@@ -217,9 +217,9 @@ export default {
             color: var(--color-pink);
         }
 
-        &.icon-forward {
+        /* &.icon-link {
             color: var(--color-yellow);
-        }
+        } */
     }
 
     .info {

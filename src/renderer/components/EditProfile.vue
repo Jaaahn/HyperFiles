@@ -2,38 +2,47 @@
     <div id="editProfile">
         <h1>Edit profile "{{ profileData.name }}"</h1>
 
-        <p class="label">Name of profile</p>
-        <hy-input v-model="profileData.name" placeholder="Name of profile" />
+        <hy-sub-section title="Profile name">
+            <hy-input v-model="profileData.name" placeholder="Profile name" />
+        </hy-sub-section>
 
         <h2>Local</h2>
-        <p class="label">Starting path</p>
-        <hy-flex-container>
-            <hy-input v-model="profileData.local.path" placeholder="Local starting path" />
-            <hy-button @click="selectLocalPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
-        </hy-flex-container>
+
+        <hy-sub-section title="Local starting path">
+            <hy-flex-container>
+                <hy-input v-model="profileData.local.path" placeholder="Local starting path" />
+                <hy-button @click="selectLocalPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
+            </hy-flex-container>
+        </hy-sub-section>
 
         <h2>Remote</h2>
-        <p class="label">Starting path</p>
-        <hy-input v-model="profileData.remote.path" placeholder="Starting path" />
 
-        <p class="label">Hostname</p>
-        <hy-input v-model="profileData.remote.host" placeholder="Hostname" />
+        <hy-sub-section title="Starting path">
+            <hy-input v-model="profileData.remote.path" placeholder="Starting path" />
+        </hy-sub-section>
 
-        <p class="label">Port</p>
-        <hy-input v-model="profileData.remote.port" placeholder="Port" />
+        <hy-sub-section title="Hostname">
+            <hy-input v-model="profileData.remote.host" placeholder="Hostname" />
+        </hy-sub-section>
 
-        <p class="label">Username</p>
-        <hy-input v-model="profileData.remote.username" placeholder="Username" />
+        <hy-sub-section title="Port">
+            <hy-input v-model="profileData.remote.port" placeholder="Port" />
+        </hy-sub-section>
 
-        <p class="label">Path to private key</p>
-        <hy-flex-container>
-            <hy-input v-model="profileData.remote.privateKeyPath" placeholder="Path to private key (on your local system)" />
-            <hy-button @click="selectPrivateKeyPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
-        </hy-flex-container>
+        <hy-sub-section title="Username">
+            <hy-input v-model="profileData.remote.username" placeholder="Username" />
+        </hy-sub-section>
 
-        <p class="label">Passphrase</p>
-        <hy-input v-model="remotePassword" @blur.native="updateRemotePassword()" placeholder="Remote password" type="password" id="remotePassword" />
-        <p class="small">Your password will be stored encrypted in your system's keychain.</p>
+        <hy-sub-section title="Path to ssh private key" pre="Leave this empty, if you use passphrase authentication instead.">
+            <hy-flex-container>
+                <hy-input v-model="profileData.remote.privateKeyPath" placeholder="Path to private key (on local system)" />
+                <hy-button @click="selectPrivateKeyPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
+            </hy-flex-container>
+        </hy-sub-section>
+
+        <hy-sub-section title="Passphrase" pre="Your password will be stored encrypted in your system's keychain.">
+            <hy-input v-model="remotePassword" @blur.native="updateRemotePassword()" placeholder="Remote password" type="password" id="remotePassword" />
+        </hy-sub-section>
     </div>
 </template>
 
@@ -61,7 +70,11 @@ export default {
                 properties: ["openDirectory"],
             });
 
-            this.profileData.local.path = result.filePaths[0];
+            let path = result.filePaths[0];
+
+            if (path) {
+                this.profileData.local.path = path;
+            }
         },
         async selectPrivateKeyPath() {
             let result = await dialog.showOpenDialog({
@@ -69,7 +82,11 @@ export default {
                 properties: ["openFile"],
             });
 
-            this.profileData.remote.privateKeyPath = result.filePaths[0];
+            let path = result.filePaths[0];
+
+            if (path) {
+                this.profileData.remote.privateKeyPath = path;
+            }
         },
         async updateRemotePassword() {
             if (this.remotePassword == "") await keytar.deletePassword("de.janbahlinger.sftp-client", getAccountInfoString(this.profileData));

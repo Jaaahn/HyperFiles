@@ -34,6 +34,7 @@
 let fsp = require("fs/promises");
 let shell = require("electron").shell;
 let pathModule = require("path");
+import { timeDifferenceString } from "@jaaahn/shared-utils";
 
 export default {
     name: "FileItem",
@@ -76,12 +77,7 @@ export default {
             return this.file.type == "l";
         },
         timeDisplay() {
-            let today = new Date().toLocaleDateString();
-            let fileModifyDate = new Date(this.file.modifyTime).toLocaleDateString();
-
-            if (this.file.modifyTime > new Date().getTime() - 60 * 1000) return "Just Now";
-            if (fileModifyDate == today) return `Today, ${new Date(this.file.modifyTime).toLocaleTimeString()}`;
-            return new Date(this.file.modifyTime).toLocaleString();
+            return timeDifferenceString(new Date(this.file.modifyTime));
         },
     },
     methods: {

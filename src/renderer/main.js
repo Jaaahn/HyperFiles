@@ -5,14 +5,13 @@ import App from "./App.vue";
 
 import "./index.scss";
 
-import "../../node_modules/@jaaahn/hyper-ui/dist/index.css";
-
-import HyperUI from "@jaaahn/hyper-ui";
-import router from "./router.js";
-
 const app = createApp(App);
 
-app.use(router);
+import HyperUI from "@jaaahn/hyper-ui";
 app.use(HyperUI);
+import "@jaaahn/hyper-ui/styles";
+
+import router from "./router.js";
+app.use(router);
 
 app.mount("#app");

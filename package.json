@@ -27,7 +27,8 @@
     },
     "dependencies": {
         "@electron/remote": "^1.2.1",
-        "@jaaahn/hyper-ui": "^2.0.0-beta.7",
+        "@jaaahn/hyper-ui": "^2.0.0-beta.8",
+        "@jaaahn/shared-utils": "^1.0.4",
         "@vueuse/core": "^6.3.2",
         "electron-squirrel-startup": "^1.0.0",
         "hyper-modals": "^1.0.4",

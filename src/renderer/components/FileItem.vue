@@ -7,13 +7,12 @@
         </div>
 
         <div class="info">
-            <p class="name" v-if="!renaming.active" :title="file.name">{{ file.name }}</p>
-            <hy-input v-model="renaming.newVal" v-else />
+            <p class="name" :title="file.name">{{ file.name }}</p>
 
             <p class="details"><i class="icon-clock"></i> {{ timeDisplay }}</p>
         </div>
 
-        <div v-if="renaming.active == false" class="actions">
+        <div class="actions">
             <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent" title="Upload file (override any remote files with same name)"><i class="icon-upload"></i></hy-button>
             <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent" title="Download file (override any local files with same name)"><i class="icon-download"></i></hy-button>
 
@@ -21,11 +20,22 @@
 
             <hy-button @click="deleteObject()" :loading="loading.delete" type="transparent" title="Delete file"><i class="icon-trash"></i></hy-button>
 
-            <hy-button @click="renaming.active = true" type="transparent" title="Open rename dialogue"><i class="icon-pen"></i></hy-button>
-        </div>
-        <div v-else class="actions">
-            <hy-button @click="rename()" :loading="loading.rename" type="transparent" title="Save changes"><i class="icon-check"></i></hy-button>
-            <hy-button @click="resetRename()" type="transparent" title="Cancel and discard changes"><i class="icon-cross"></i></hy-button>
+            <hy-popover v-model="renaming.active">
+                <template #element>
+                    <hy-button @click="renaming.active = !renaming.active" type="transparent" title="Open rename dialogue"><i class="icon-pen"></i></hy-button>
+                </template>
+
+                <template #popover>
+                    <h3>Rename file</h3>
+
+                    <hy-input v-model="renaming.newVal" placeholder="file name" />
+
+                    <hy-flex-container>
+                        <hy-button @click="rename()" :disabled="renaming.newVal == '' || renaming.newVal == file.name" :loading="loading.rename" type="primary" title="Save changes"><i class="icon-check"></i></hy-button>
+                        <hy-button @click="resetRename()" title="Cancel and discard changes"><i class="icon-cross" style="color: var(--color-pink)"></i></hy-button>
+                    </hy-flex-container>
+                </template>
+            </hy-popover>
         </div>
     </div>
 </template>
@@ -258,7 +268,8 @@ export default {
         gap: 5px;
         max-width: 0px;
 
-        .hyper-button {
+        .hyper-button,
+        .hyper-popover {
             margin: 0;
 
             &:deep(button) {

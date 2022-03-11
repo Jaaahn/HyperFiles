@@ -196,5 +196,6 @@ export default {
     display: flex;
     flex-direction: column;
     position: relative;
+    position: fixed;
 }
 </style>

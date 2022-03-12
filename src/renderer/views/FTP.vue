@@ -151,6 +151,10 @@ export default {
         this.paths.remote = this.currentProfileInfo.remote.path;
         this.paths.local = this.currentProfileInfo.local.path;
 
+        // Start fetching local files
+        this.getLocalFiles();
+
+        // Connect to remote
         try {
             // Connect to host
             this.currentClient = new sftpClient();
@@ -175,9 +179,8 @@ export default {
             return;
         }
 
-        // List files
+        // Get remote files
         this.getRemoteFiles();
-        this.getLocalFiles();
     },
     components: {
         Header,

@@ -276,6 +276,11 @@ export default {
                 padding: 10px;
             }
         }
+
+        // Popover is buggy if clicked on other file
+        .hyper-popover :deep(#menu) {
+            transition: none;
+        }
     }
 }
 </style>

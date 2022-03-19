@@ -128,7 +128,7 @@ export default {
             this.loading.transfer = false;
         },
         async deleteObject() {
-            if (!confirm(`Shure to delete '${this.file.name}' from ${this.type}?`)) return;
+            if (!confirm(this.type == "remote" ? `Shure to delete "${this.file.name}" from remote? This action is irreversible!` : `Shure to move local file "${this.file.name}" to trash?`)) return;
             this.loading.delete = true;
 
             try {
@@ -138,9 +138,7 @@ export default {
 
                     this.$emit("fetchRemote");
                 } else {
-                    await fsp.rm(this.file.path, {
-                        recursive: true,
-                    });
+                    await shell.trashItem(this.file.path);
                     this.$emit("fetchLocal");
                 }
             } catch (error) {

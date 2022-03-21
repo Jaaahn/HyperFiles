@@ -16,8 +16,6 @@
             <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent" title="Upload file (override any remote files with same name)"><i class="icon-upload"></i></hy-button>
             <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent" title="Download file (override any local files with same name)"><i class="icon-download"></i></hy-button>
 
-            <hy-button v-if="type == 'local'" @click="openFile()" type="transparent" title="Open file in default App"><i class="icon-presentation"></i></hy-button>
-
             <hy-button @click="deleteObject()" :loading="loading.delete" type="transparent" title="Delete file"><i class="icon-trash"></i></hy-button>
 
             <hy-popover v-model="renaming.active">
@@ -36,6 +34,21 @@
                     </hy-flex-container>
                 </template>
             </hy-popover>
+
+            <hy-popover v-model="moreOptions" minWidth="350px" v-if="type == 'local'">
+                <template #element>
+                    <hy-button @click="moreOptions = !moreOptions" type="transparent" title="View more options"><i class="icon-ellipsis-circle"></i></hy-button>
+                </template>
+
+                <template #popover>
+                    <h3>More options</h3>
+
+                    <hy-button @click="openFile()"><i class="icon-presentation"></i> Open file</hy-button>
+
+                    <hy-button @click="$emit('watchFile', true)" v-if="watchingFile == false"><i class="icon-share"></i> Upload on change</hy-button>
+                    <hy-button @click="$emit('watchFile', false)" v-else><i class="icon-share"></i> Stop upload on change</hy-button>
+                </template>
+            </hy-popover>
         </div>
     </div>
 </template>
@@ -48,12 +61,13 @@ import { timeDifferenceString } from "@jaaahn/shared-utils";
 
 export default {
     name: "FileItem",
-    emits: ["fetchRemote", "fetchLocal"],
+    emits: ["fetchRemote", "fetchLocal", "watchFile"],
     props: {
         type: String,
         file: Object,
         client: Object,
         paths: Object,
+        watchingFile: Boolean,
     },
     data() {
         return {
@@ -61,6 +75,7 @@ export default {
                 active: false,
                 newVal: this.file.name,
             },
+            moreOptions: false,
             loading: {
                 transfer: false,
                 delete: false,
@@ -266,11 +281,12 @@ export default {
         gap: 5px;
         max-width: 0px;
 
-        .hyper-button,
+        & > .hyper-button,
         .hyper-popover {
             margin: 0;
 
-            &:deep(button) {
+            &:deep(button),
+            &:deep(input) {
                 padding: 10px;
             }
         }

@@ -12,7 +12,15 @@
             <p class="details"><i class="icon-clock"></i> {{ timeDisplay }}</p>
         </div>
 
-        <div v-if="watchingFile" id="watchingFileIndicator"></div>
+        <hy-popover v-model="watchingFileIndicatorTooltip" :hover="true">
+            <template #element>
+                <div v-if="watchingFile" id="watchingFileIndicator"></div>
+            </template>
+
+            <template #popover>
+                <p style="text-align: center">Auto-Upload is active. Changes will be uploaded automatically.</p>
+            </template>
+        </hy-popover>
 
         <div class="actions">
             <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent" title="Upload file (override any remote files with same name)"><i class="icon-upload"></i></hy-button>
@@ -83,6 +91,7 @@ export default {
                 delete: false,
                 rename: false,
             },
+            watchingFileIndicatorTooltip: false,
         };
     },
     watch: {
@@ -306,9 +315,12 @@ export default {
 @keyframes watchingFileIndicator {
     from {
         opacity: 1;
+        transform: scale(1.2);
     }
+
     to {
-        opacity: 0.6;
+        opacity: 0.5;
+        transform: scale(1);
     }
 }
 </style>

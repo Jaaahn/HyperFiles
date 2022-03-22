@@ -12,6 +12,8 @@
             <p class="details"><i class="icon-clock"></i> {{ timeDisplay }}</p>
         </div>
 
+        <div v-if="watchingFile" id="watchingFileIndicator"></div>
+
         <div class="actions">
             <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent" title="Upload file (override any remote files with same name)"><i class="icon-upload"></i></hy-button>
             <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent" title="Download file (override any local files with same name)"><i class="icon-download"></i></hy-button>
@@ -268,6 +270,14 @@ export default {
         }
     }
 
+    #watchingFileIndicator {
+        width: 10px;
+        height: 10px;
+        background-color: var(--color-pink);
+        border-radius: 100px;
+        animation: watchingFileIndicator 1s linear infinite alternate;
+    }
+
     .actions {
         display: flex;
         overflow-x: hidden;
@@ -288,6 +298,17 @@ export default {
         .hyper-popover :deep(#menu) {
             transition: none;
         }
+    }
+}
+</style>
+
+<style lang="scss">
+@keyframes watchingFileIndicator {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0.6;
     }
 }
 </style>

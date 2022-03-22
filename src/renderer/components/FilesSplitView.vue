@@ -14,6 +14,9 @@
                     <hy-button @click="selectLocalPath()" :extend="false" type="transparent">
                         <i class="icon-target"></i>
                     </hy-button>
+                    <hy-button @click="openCurrentDirectory()" :extend="false" type="transparent">
+                        <i class="icon-presentation" title="Open current directory in file explorer"></i>
+                    </hy-button>
                     <hy-button @click="hideDotFiles.local = !hideDotFiles.local" :extend="false" type="transparent">
                         <i class="icon-eye-slash" v-if="hideDotFiles.local == true" title="Switch to displaying all files"></i>
                         <i class="icon-eye" v-if="hideDotFiles.local == false" title="Switch to hiding Dotfiles"></i>
@@ -89,6 +92,7 @@ import Modal from "./Modal.vue";
 
 let fsp = require("fs/promises");
 let pathModule = require("path");
+let shell = require("electron").shell;
 let chokidar = require("chokidar");
 const { dialog } = require("@electron/remote");
 
@@ -257,6 +261,14 @@ export default {
             } catch (error) {
                 console.error(error);
                 alert("Stopping File-Watcher for Auto-Upload failed");
+            }
+        },
+        async openCurrentDirectory() {
+            try {
+                await shell.openPath(this.paths.local);
+            } catch (error) {
+                console.error(error);
+                alert("Error while opening current folder");
             }
         },
     },

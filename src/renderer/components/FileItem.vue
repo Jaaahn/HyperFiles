@@ -1,5 +1,5 @@
 <template>
-    <div class="fileItem" :class="{ renamingActive: renaming.active, isFolder: file.type == 'd' }">
+    <div class="fileItem" :class="{ renamingActive: renaming.active, moreOptionsActive: moreOptions, isFolder: file.type == 'd' }">
         <div class="icons">
             <i class="icon-file" v-if="file.type == '-'" title="This item is a file"></i>
             <i class="icon-folder" v-if="file.type == 'd'" title="This item is directory. Double click to open"></i>
@@ -43,7 +43,7 @@
                 <template #popover>
                     <h3>More options</h3>
 
-                    <hy-button @click="openFile()"><i class="icon-presentation"></i> Open file</hy-button>
+                    <hy-button @click="openFile()"><i class="icon-presentation"></i> Open in default app</hy-button>
 
                     <hy-button @click="$emit('watchFile', true)" v-if="watchingFile == false"><i class="icon-share"></i> Upload on change</hy-button>
                     <hy-button @click="$emit('watchFile', false)" v-else><i class="icon-share"></i> Stop upload on change</hy-button>
@@ -211,7 +211,8 @@ export default {
     width: 100%;
 
     &:hover,
-    &.renamingActive {
+    &.renamingActive,
+    &.moreOptionsActive {
         background-color: var(--color-gray-3);
 
         .actions {
@@ -253,14 +254,6 @@ export default {
             white-space: nowrap;
             overflow: hidden;
             width: 100%;
-        }
-
-        .hyper-input {
-            margin: 5px 0;
-
-            &:deep(input) {
-                padding: 5px;
-            }
         }
 
         .details {

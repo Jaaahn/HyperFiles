@@ -53,7 +53,7 @@
                 <template #popover>
                     <h3>More options</h3>
 
-                    <hy-button @click="openFile()"><i class="icon-presentation"></i> Open in default app</hy-button>
+                    <hy-button @click="openFile()"><i class="icon-arrow-up-right-from-square"></i> Open in default app</hy-button>
 
                     <hy-button @click="$emit('watchFile', true)" v-if="watchingFile == false"><i class="icon-share"></i> Upload on change</hy-button>
                     <hy-button @click="$emit('watchFile', false)" v-else><i class="icon-share"></i> Stop upload on change</hy-button>

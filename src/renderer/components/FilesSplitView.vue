@@ -15,7 +15,7 @@
                         <i class="icon-target"></i>
                     </hy-button>
                     <hy-button @click="openCurrentDirectory()" :extend="false" type="transparent">
-                        <i class="icon-presentation" title="Open current directory in file explorer"></i>
+                        <i class="icon-arrow-up-right-from-square" title="Open current directory in file explorer"></i>
                     </hy-button>
                     <hy-button @click="hideDotFiles.local = !hideDotFiles.local" :extend="false" type="transparent">
                         <i class="icon-eye-slash" v-if="hideDotFiles.local == true" title="Switch to displaying all files"></i>

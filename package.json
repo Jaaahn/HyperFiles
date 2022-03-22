@@ -30,10 +30,12 @@
         "@jaaahn/hyper-ui": "^2.0.0-beta.16",
         "@jaaahn/shared-utils": "^1.0.4",
         "@vueuse/core": "^6.3.2",
+        "chokidar": "^3.5.3",
         "electron-squirrel-startup": "^1.0.0",
         "hyper-modals": "^1.0.4",
         "keytar": "^7.7.0",
         "lodash": "^4.17.21",
+        "p-queue": "^7.2.0",
         "ssh2-sftp-client": "7.0.3",
         "vue": "^3.2.9",
         "vue-router": "^4.0.11"

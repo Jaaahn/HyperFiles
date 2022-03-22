@@ -35,7 +35,7 @@
                 <p v-if="localFiles.length != 0">There are hidden Dotfiles</p>
             </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in filteredFiles.local" :file="file" :client="client" :paths="paths" type="local" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'local')" />
+                <FileItem class="file" v-for="file in filteredFiles.local" :file="file" :client="client" :paths="paths" type="local" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file, 'local')" />
             </div>
         </div>
 
@@ -71,7 +71,7 @@
                 <p v-if="remoteFiles.length != 0">There are hidden Dotfiles</p>
             </div>
             <div class="files" v-else>
-                <FileItem class="file" v-for="file in filteredFiles.remote" :file="file" :client="client" :paths="paths" type="remote" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @dblclick.native="openFolder(file, 'remote')" />
+                <FileItem class="file" v-for="file in filteredFiles.remote" :file="file" :client="client" :paths="paths" type="remote" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchRemote="$emit('fetchRemote')" @fetchLocal="$emit('fetchLocal')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file, 'remote')" />
             </div>
         </div>
     </div>
@@ -89,7 +89,11 @@ import Modal from "./Modal.vue";
 
 let fsp = require("fs/promises");
 let pathModule = require("path");
+let chokidar = require("chokidar");
 const { dialog } = require("@electron/remote");
+
+import PQueue from "p-queue";
+const autoUploadQueue = new PQueue({ concurrency: 1 });
 
 export default {
     name: "FilesSplitView",
@@ -114,6 +118,8 @@ export default {
                 type: "",
                 loading: false,
             },
+            watchedFiles: [],
+            fileWatcher: null,
         };
     },
     computed: {
@@ -143,7 +149,7 @@ export default {
                 this.newDir.open = false;
             } catch (error) {
                 console.error(error);
-                alert("Error while deleting file");
+                alert("Error while creating directory");
             }
 
             this.newDir.loading = false;
@@ -156,16 +162,20 @@ export default {
         updatePaths(event, type) {
             if (event.code != "Enter") return;
 
-            // this.paths[type] = event.target.value;
             this.$emit("updatePaths", event.target.value, type);
+
+            this.closeFileWatcher();
         },
         openParentFolder(type) {
             let newPath = pathModule.join(this.paths[type], "..");
             this.$emit("updatePaths", newPath, type);
+            this.closeFileWatcher();
         },
         openFolder(file, type) {
             if (file.type != "d") return;
             this.$emit("updatePaths", file.path, type);
+
+            this.closeFileWatcher();
         },
         async selectLocalPath() {
             let info = await dialog.showOpenDialog({
@@ -178,6 +188,7 @@ export default {
             if (path == undefined) return;
 
             this.$emit("updatePaths", path, "local");
+            this.closeFileWatcher();
         },
         filterFiles(files, filterDotFilesOut) {
             return files.filter((file) => {
@@ -185,6 +196,74 @@ export default {
                 return file.name[0] != "."; // Return true if filename doesn't start with "."
             });
         },
+        watchFileStartStop(value, file) {
+            if (value) {
+                this.watchedFiles.push(file.path);
+
+                if (this.fileWatcher == null) this.initFileWatcher(file.path);
+                else this.fileWatcher.add(file.path);
+            } else {
+                let index = this.watchedFiles.indexOf(file.path);
+                this.watchedFiles.splice(index, 1);
+
+                this.fileWatcher.unwatch(file.path);
+            }
+        },
+        initFileWatcher(path) {
+            this.fileWatcher = chokidar.watch(path);
+
+            let uploadFile = async (path) => {
+                console.log(path, this.paths.local);
+                let relativeLocalPath = pathModule.relative(this.paths.local, path);
+                let remoteFilePath = pathModule.join(this.paths.remote, relativeLocalPath);
+
+                let fileStats = await fsp.lstat(path);
+
+                console.log("Auto-Uploading", path);
+
+                try {
+                    if (fileStats.isDirectory()) await this.client.uploadDir(path, remoteFilePath);
+                    if (fileStats.isFile()) await this.client.fastPut(path, remoteFilePath);
+
+                    this.$emit("fetchRemote");
+                } catch (error) {
+                    console.error(error);
+                    alert("Error while Auto-Uploading");
+                }
+            };
+
+            let addToQueue = (path) => {
+                autoUploadQueue.add(() => uploadFile(path));
+            };
+
+            this.fileWatcher.on("add", addToQueue);
+            this.fileWatcher.on("addDir", addToQueue);
+            this.fileWatcher.on("change", addToQueue);
+
+            this.fileWatcher.on("error", (error) => {
+                console.error(error);
+                alert("File-Watcher for Auto-Upload threw an error");
+            });
+        },
+        async closeFileWatcher() {
+            if (this.fileWatcher == null) return;
+
+            console.log("closing file watcher");
+
+            try {
+                await this.fileWatcher.close();
+                this.fileWatcher = null;
+                this.watchedFiles.length = 0;
+            } catch (error) {
+                console.error(error);
+                alert("Stopping File-Watcher for Auto-Upload failed");
+            }
+        },
+    },
+    created() {
+        this.$router.beforeEach(() => {
+            this.closeFileWatcher();
+        });
     },
     components: {
         FileItem,

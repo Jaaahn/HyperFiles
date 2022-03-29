@@ -15,7 +15,7 @@
                         <i class="icon-target"></i>
                     </hy-button>
 
-                    <hy-popover v-model="openDirectoryShown">
+                    <hy-popover v-model="openDirectoryShown" :hover="true">
                         <template #element>
                             <hy-button @click="openDirectoryShown = !openDirectoryShown" :extend="false" type="transparent">
                                 <i class="icon-arrow-up-right-from-square" title="Open current directory"></i>

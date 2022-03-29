@@ -1,6 +1,6 @@
 <template>
     <hy-main id="profiles">
-        <h1>Launch new connection from favorites</h1>
+        <h1>Launch new connection</h1>
 
         <transition-group tag="section" name="profiles" appear>
             <hy-section class="profile" v-for="profile in sortedProfiles" @dblclick.native="$router.push(`/ftp/${profile.id}`)" :key="profile.id">
@@ -20,10 +20,19 @@
 
         <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
 
+        <h1>Export and Import</h1>
         <hy-flex-container>
             <hy-button @click="exportConfig()" :disabled="profiles.length == 0"><i class="icon-share"></i> Export Config</hy-button>
             <hy-button @click="importConfig()"><i class="icon-import"></i> Import Config</hy-button>
         </hy-flex-container>
+
+        <h1>Settings</h1>
+        <hy-sub-section title="Edit app path" pre="Absolute path to your prefered editor">
+            <hy-flex-container :allowBreak="false">
+                <hy-input v-model="settings.editorPath" v-if="settings.editorPath" placeholder="Absolute path to your prefered editor"></hy-input>
+                <hy-button @click="selectEditorPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
+            </hy-flex-container>
+        </hy-sub-section>
     </hy-main>
 
     <Modal :open="editing.open" @close="editing.open = false">
@@ -35,13 +44,14 @@
 import EditProfile from "../components/EditProfile.vue";
 import Modal from "../components/Modal.vue";
 
-import { profiles } from "../state.js";
+import { profiles, settings } from "../state.js";
 import generateId from "../utils/generateId.js";
 import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 import _ from "lodash";
 
 let fsp = require("fs/promises");
+let pathModule = require("path");
 let { dialog } = require("@electron/remote");
 let keytar = require("keytar");
 
@@ -54,6 +64,7 @@ export default {
                 profile: null,
             },
             profiles,
+            settings,
         };
     },
     computed: {
@@ -144,6 +155,18 @@ export default {
                 alert("Error while reading config");
             }
         },
+        async selectEditorPath() {
+            let result = await dialog.showOpenDialog({
+                defaultPath: this.settings.editorPath,
+                properties: ["openFile"],
+            });
+
+            let path = result.filePaths[0];
+
+            if (path) {
+                this.settings.editorPath = path;
+            }
+        },
     },
     components: {
         EditProfile,
@@ -191,6 +214,11 @@ export default {
 
     #newBtn {
         margin-top: 50px;
+    }
+
+    .hyper-subsection {
+        background-color: var(--section-bg-color);
+        padding: var(--section-padding);
     }
 }
 

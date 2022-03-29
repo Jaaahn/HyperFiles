@@ -14,9 +14,26 @@
                     <hy-button @click="selectLocalPath()" :extend="false" type="transparent">
                         <i class="icon-target"></i>
                     </hy-button>
-                    <hy-button @click="openCurrentDirectory()" :extend="false" type="transparent">
-                        <i class="icon-arrow-up-right-from-square" title="Open current directory in file explorer"></i>
-                    </hy-button>
+
+                    <hy-popover v-model="openDirectoryShown">
+                        <template #element>
+                            <hy-button @click="openDirectoryShown = !openDirectoryShown" :extend="false" type="transparent">
+                                <i class="icon-arrow-up-right-from-square" title="Open current directory"></i>
+                            </hy-button>
+                        </template>
+                        <template #popover>
+                            <hy-button @click="openCurrentDirectoryInFinder()">
+                                <i class="icon-arrow-up-right-from-square"></i>
+                                Open in file explorer
+                            </hy-button>
+
+                            <hy-button @click="openCurrentDirectoryInEditor()">
+                                <i class="icon-arrow-up-right-from-square"></i>
+                                Open in editor
+                            </hy-button>
+                        </template>
+                    </hy-popover>
+
                     <hy-button @click="hideDotFiles.local = !hideDotFiles.local" :extend="false" type="transparent">
                         <i class="icon-eye-slash" v-if="hideDotFiles.local == true" title="Switch to displaying all files"></i>
                         <i class="icon-eye" v-if="hideDotFiles.local == false" title="Switch to hiding Dotfiles"></i>
@@ -90,11 +107,14 @@
 import FileItem from "./FileItem.vue";
 import Modal from "./Modal.vue";
 
+import { settings } from "../state.js";
+
 let fsp = require("fs/promises");
 let pathModule = require("path");
 let shell = require("electron").shell;
 let chokidar = require("chokidar");
 const { dialog } = require("@electron/remote");
+const { spawn } = require("child_process");
 
 import PQueue from "p-queue";
 const autoUploadQueue = new PQueue({ concurrency: 1 });
@@ -124,6 +144,8 @@ export default {
             },
             watchedFiles: [],
             fileWatcher: null,
+            openDirectoryShown: false,
+            settings,
         };
     },
     computed: {
@@ -263,13 +285,43 @@ export default {
                 alert("Stopping File-Watcher for Auto-Upload failed");
             }
         },
-        async openCurrentDirectory() {
+        async openCurrentDirectoryInFinder() {
             try {
                 await shell.openPath(this.paths.local);
             } catch (error) {
                 console.error(error);
                 alert("Error while opening current folder");
             }
+        },
+        async openCurrentDirectoryInEditor() {
+            let editor = this.settings.editorPath;
+            let folder = this.paths.local;
+
+            // Check if path exists
+            try {
+                await fsp.access(editor);
+            } catch (error) {
+                alert("Invalid path to editor");
+                return;
+            }
+
+            // Spawn editor
+            let options = {
+                detached: true,
+            };
+
+            let child;
+
+            if (process.platform == "darwin") {
+                child = spawn("open", ["-a", editor, folder], options);
+            } else {
+                child = spawn(editor, [folder], options);
+            }
+
+            child.on("error", (error) => {
+                console.error("Spawning editor error", error);
+                alert("Error opening editor.");
+            });
         },
     },
     created() {
@@ -332,6 +384,10 @@ export default {
 
                 .hyper-button :deep(button) {
                     padding: 10px;
+                }
+
+                .hyper-popover {
+                    flex: 0;
                 }
             }
         }

@@ -29,7 +29,7 @@
         <h1>Settings</h1>
         <hy-sub-section title="Edit app path" pre="Absolute path to your prefered editor">
             <hy-flex-container :allowBreak="false">
-                <hy-input v-model="settings.editorPath" v-if="settings.editorPath" placeholder="Absolute path to your prefered editor"></hy-input>
+                <hy-input v-model="settings.editorPath" v-if="settings.editorPath != undefined" placeholder="Absolute path to your prefered editor"></hy-input>
                 <hy-button @click="selectEditorPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
             </hy-flex-container>
         </hy-sub-section>

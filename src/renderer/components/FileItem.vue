@@ -1,5 +1,5 @@
 <template>
-    <div class="fileItem" :class="{ renamingActive: renaming.active, moreOptionsActive: moreOptions, isFolder: file.type == 'd' }">
+    <div class="fileItem" :class="{ renamingActive: renaming.active, moreOptionsActive: moreOptions, isFolder: file.type == 'd', hovering }" @mouseover="hovering = true" @mouseleave="hovering = false">
         <div class="icons">
             <i class="icon-file" v-if="file.type == '-'" title="This item is a file"></i>
             <i class="icon-folder" v-if="file.type == 'd'" title="This item is directory. Double click to open"></i>
@@ -12,17 +12,9 @@
             <p class="details"><i class="icon-clock"></i> {{ timeDisplay }}</p>
         </div>
 
-        <hy-popover v-model="watchingFileIndicatorTooltip" :hover="true">
-            <template #element>
-                <div v-if="watchingFile" id="watchingFileIndicator"></div>
-            </template>
+        <div v-if="watchingFile" id="watchingFileIndicator"></div>
 
-            <template #popover>
-                <p style="text-align: center">Auto-Upload is active. Changes will be uploaded automatically.</p>
-            </template>
-        </hy-popover>
-
-        <div class="actions">
+        <div class="actions" v-if="hovering || renaming.active || moreOptions">
             <hy-button v-if="type == 'local'" @click="upload()" :loading="loading.transfer" type="transparent" title="Upload file (override any remote files with same name)"><i class="icon-upload"></i></hy-button>
             <hy-button v-if="type == 'remote'" @click="download()" :loading="loading.transfer" type="transparent" title="Download file (override any local files with same name)"><i class="icon-download"></i></hy-button>
 
@@ -81,6 +73,7 @@ export default {
     },
     data() {
         return {
+            hovering: false,
             renaming: {
                 active: false,
                 newVal: this.file.name,
@@ -91,7 +84,6 @@ export default {
                 delete: false,
                 rename: false,
             },
-            watchingFileIndicatorTooltip: false,
         };
     },
     watch: {
@@ -220,8 +212,9 @@ export default {
     align-items: center;
     gap: 20px;
     width: 100%;
+    min-height: 57px;
 
-    &:hover,
+    &.hovering,
     &.renamingActive,
     &.moreOptionsActive {
         background-color: var(--color-gray-3);

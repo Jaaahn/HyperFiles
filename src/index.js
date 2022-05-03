@@ -1,8 +1,10 @@
 // This file is the main file for Electron's main process.
 
-const { app, BrowserWindow } = require("electron");
-require("@electron/remote/main").initialize();
 let path = require("path");
+const { app, BrowserWindow } = require("electron");
+
+let remoteMain = require("@electron/remote/main");
+remoteMain.initialize();
 
 function createWindow() {
     const window = new BrowserWindow({
@@ -23,6 +25,7 @@ function createWindow() {
     }
 
     /* window.webContents.openDevTools(); */
+    remoteMain.enable(window.webContents);
 }
 
 app.whenReady().then(() => {

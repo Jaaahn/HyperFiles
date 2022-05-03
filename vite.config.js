@@ -10,8 +10,9 @@ export default {
     publicDir: "./renderer/public/",
     build: {
         outDir: "../vue-dist/",
+        target: "node16",
     },
     optimizeDeps: {
-        exclude: ["fs", "fs/promises", "path", "keytar", "crypto", "fsevents.node", "chokidar"],
+        exclude: ["fs", "fs/promises", "path", "keytar", "crypto", "fsevents.node", "sshcrypto.node", "chokidar", "ssh2", "ssh2_sftp_client"],
     },
 };

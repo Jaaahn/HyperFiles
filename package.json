@@ -14,31 +14,31 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@electron-forge/cli": "^6.0.0-beta.60",
-        "@electron-forge/maker-deb": "^6.0.0-beta.60",
-        "@electron-forge/maker-rpm": "^6.0.0-beta.60",
-        "@electron-forge/maker-squirrel": "^6.0.0-beta.60",
-        "@electron-forge/maker-zip": "^6.0.0-beta.60",
-        "@vitejs/plugin-vue": "^1.6.1",
-        "@vue/compiler-sfc": "^3.2.9",
-        "electron": "^14.0.0",
-        "sass": "^1.39.0",
-        "vite": "^2.5.4"
+        "@electron-forge/cli": "^6.0.0-beta.63",
+        "@electron-forge/maker-deb": "^6.0.0-beta.63",
+        "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+        "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+        "@electron-forge/maker-zip": "^6.0.0-beta.63",
+        "@vitejs/plugin-vue": "^2.3.1",
+        "@vue/compiler-sfc": "^3.2.33",
+        "electron": "^18.2.0",
+        "sass": "^1.51.0",
+        "vite": "^2.9.7"
     },
     "dependencies": {
-        "@electron/remote": "^1.2.1",
+        "@electron/remote": "^2.0.8",
         "@jaaahn/hyper-ui": "^2.0.1",
-        "@jaaahn/shared-utils": "^1.0.4",
-        "@vueuse/core": "^6.3.2",
+        "@jaaahn/shared-utils": "^1.0.5",
+        "@vueuse/core": "^8.4.0",
         "chokidar": "^3.5.3",
         "electron-squirrel-startup": "^1.0.0",
         "hyper-modals": "^1.0.4",
-        "keytar": "^7.7.0",
+        "keytar": "^7.9.0",
         "lodash": "^4.17.21",
         "p-queue": "^7.2.0",
-        "ssh2-sftp-client": "7.0.3",
-        "vue": "^3.2.9",
-        "vue-router": "^4.0.11"
+        "ssh2-sftp-client": "8.0.0",
+        "vue": "^3.2.33",
+        "vue-router": "^4.0.14"
     },
     "config": {
         "forge": {

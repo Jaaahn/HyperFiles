@@ -1,9 +1,13 @@
 <template>
     <div class="fileItem" :class="{ renamingActive: renaming.active, moreOptionsActive: moreOptions, isFolder: file.type == 'd', hovering }" @mouseover="hovering = true" @mouseleave="hovering = false">
         <div class="icons">
-            <i class="icon-file" v-if="file.type == '-'" title="This item is a file"></i>
-            <i class="icon-folder" v-if="file.type == 'd'" title="This item is directory. Double click to open"></i>
-            <i class="icon-link" v-if="file.type == 'l'" title="This item is a link"></i>
+            <div id="loader" v-if="isLoadingAnyAction">
+                <hy-loader :class="fileType" :width="25" :height="25" :line="3"></hy-loader>
+            </div>
+
+            <i class="icon-file" v-else-if="file.type == '-'" title="This item is a file"></i>
+            <i class="icon-folder" v-else-if="file.type == 'd'" title="This item is directory. Double click to open"></i>
+            <i class="icon-link" v-else-if="file.type == 'l'" title="This item is a link"></i>
         </div>
 
         <div class="info">
@@ -104,8 +108,19 @@ export default {
         isLink() {
             return this.file.type == "l";
         },
+        fileType() {
+            if (this.isDir) return "folder";
+            if (this.isFile) return "file";
+            if (this.isLink) return "link";
+        },
         timeDisplay() {
             return timeDifferenceString(new Date(this.file.modifyTime));
+        },
+        isLoadingAnyAction() {
+            if (this.loading.transfer) return true;
+            if (this.loading.delete) return true;
+            if (this.loading.rename) return true;
+            return false;
         },
     },
     methods: {
@@ -228,22 +243,42 @@ export default {
         cursor: pointer;
     }
 
-    .icons i {
-        font-size: 25px;
-        padding-left: 10px;
-        min-width: max-content;
+    .icons {
+        #loader {
+            padding-left: 10px;
 
-        &.icon-file {
-            color: var(--accent-color);
+            .hyper-loader {
+                &.file {
+                    border-top-color: var(--accent-color) !important;
+                }
+
+                &.folder {
+                    border-top-color: var(--color-pink) !important;
+                }
+
+                /* &.link {
+                    border-top-color: var(--color-yellow) !important;
+                } */
+            }
         }
 
-        &.icon-folder {
-            color: var(--color-pink);
-        }
+        i {
+            font-size: 25px;
+            padding-left: 10px;
+            min-width: max-content;
 
-        /* &.icon-link {
-            color: var(--color-yellow);
-        } */
+            &.icon-file {
+                color: var(--accent-color);
+            }
+
+            &.icon-folder {
+                color: var(--color-pink);
+            }
+
+            /* &.icon-link {
+                color: var(--color-yellow);
+            } */
+        }
     }
 
     .info {

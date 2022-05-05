@@ -8,7 +8,8 @@
         "electron:package": "electron-forge package",
         "electron:build": "electron-forge make",
         "vite:dev": "vite",
-        "vite:build": "vite build --emptyOutDir"
+        "vite:build": "vite build --emptyOutDir",
+        "build": "npm run vite:build && npm run electron:build"
     },
     "keywords": [],
     "author": "",

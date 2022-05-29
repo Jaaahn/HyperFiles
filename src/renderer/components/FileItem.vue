@@ -51,8 +51,10 @@
 
                     <hy-button @click="openFile()"><i class="icon-arrow-up-right-from-square"></i> Open in default app</hy-button>
 
-                    <hy-button @click="$emit('watchFile', true)" v-if="watchingFile == false"><i class="icon-share"></i> Upload on change</hy-button>
-                    <hy-button @click="$emit('watchFile', false)" v-else><i class="icon-share"></i> Stop upload on change</hy-button>
+                    <hy-button @click="uploadFolderContent()" v-if="isDir == true"><i class="icon-upload"></i> Upload content</hy-button>
+
+                    <hy-button @click="$emit('watchFile', true)" v-if="watchingFile == false"><i class="icon-history"></i> Upload on change</hy-button>
+                    <hy-button @click="$emit('watchFile', false)" v-else><i class="icon-history"></i> Stop upload on change</hy-button>
                 </template>
             </hy-popover>
         </div>
@@ -128,12 +130,33 @@ export default {
         async upload() {
             this.loading.transfer = true;
 
-            // Remote path must include a valid filename
+            // Remote path must include a valid filename (like the folder name if uploading an entire directory)
+            // If I want to upload a "test" directory, file path must be "/my/current/path/test/"
             let remoteFilePath = pathModule.join(this.paths.remote, this.file.name);
 
             try {
                 if (this.isFile) await this.client.fastPut(this.file.path, remoteFilePath);
                 else if (this.isDir) await this.client.uploadDir(this.file.path, remoteFilePath);
+
+                this.$emit("fetchRemote");
+            } catch (error) {
+                console.error(error);
+                alert("Error while uploading");
+            }
+
+            this.loading.transfer = false;
+        },
+        async uploadFolderContent() {
+            if (this.isDir == false) return;
+
+            this.loading.transfer = true;
+
+            // Will put the content of the local directory to the selected path
+            // We on purpose omit the local directories name, so that sftp will put the contents just in the selected remote path
+            let remoteFilePath = pathModule.join(this.paths.remote);
+
+            try {
+                await this.client.uploadDir(this.file.path, remoteFilePath);
 
                 this.$emit("fetchRemote");
             } catch (error) {

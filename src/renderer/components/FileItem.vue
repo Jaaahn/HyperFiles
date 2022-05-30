@@ -256,10 +256,6 @@ export default {
     &.renamingActive,
     &.moreOptionsActive {
         background-color: var(--color-gray-3);
-
-        .actions {
-            max-width: 100%;
-        }
     }
 
     &.isFolder {
@@ -342,7 +338,6 @@ export default {
         display: flex;
         overflow-x: hidden;
         gap: 5px;
-        max-width: 0px;
 
         & > .hyper-button,
         .hyper-popover {

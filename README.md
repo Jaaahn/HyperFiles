@@ -1,10 +1,4 @@
-# SFTP-Client
-
-Might need to rename it though
-
-### Known issues
-
--   https://github.com/sveltejs/kit/issues/859
+# HyperFiles
 
 ### App Icon ändern
 

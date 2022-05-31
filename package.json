@@ -1,8 +1,12 @@
 {
     "name": "HyperFiles",
     "version": "1.0.0",
-    "description": "",
     "main": "./src/index.js",
+    "description": "HyperFiles - Do SFTP the easy way",
+    "author": {
+        "name": "Jaaahn"
+    },
+    "license": "MIT",
     "scripts": {
         "electron:dev": "electron-forge start",
         "electron:package": "electron-forge package",
@@ -13,9 +17,14 @@
         "build": "npm run vite:build && npm run electron:build",
         "publish": "npm run vite:build && npm run electron:publish"
     },
-    "keywords": [],
-    "author": "",
-    "license": "ISC",
+    "keywords": [
+        "SFTP",
+        "HyperUI",
+        "Easy",
+        "Files",
+        "Manager",
+        "Server"
+    ],
     "devDependencies": {
         "@electron-forge/cli": "^6.0.0-beta.63",
         "@electron-forge/maker-deb": "^6.0.0-beta.63",

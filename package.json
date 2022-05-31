@@ -9,7 +9,8 @@
         "electron:build": "electron-forge make",
         "vite:dev": "vite",
         "vite:build": "vite build --emptyOutDir",
-        "build": "npm run vite:build && npm run electron:build"
+        "build": "npm run vite:build && npm run electron:build",
+        "publish": "npm run vite:build && npm run electron:publish"
     },
     "keywords": [],
     "author": "",

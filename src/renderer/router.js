@@ -1,6 +1,7 @@
 import { createWebHashHistory, createRouter } from "vue-router";
 import FTP from "./views/FTP.vue";
-import Profiles from "./views/Profiles.vue";
+import Home from "./views/Home.vue";
+import Settings from "./views/Settings.vue";
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -12,8 +13,13 @@ const router = createRouter({
         },
         {
             path: "/",
-            name: "Profiles",
-            component: Profiles,
+            name: "Home",
+            component: Home,
+        },
+        {
+            path: "/settings",
+            name: "Settings",
+            component: Settings,
         },
     ],
 });

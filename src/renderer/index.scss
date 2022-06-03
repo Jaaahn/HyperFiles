@@ -7,6 +7,10 @@ p {
     text-align: left;
 }
 
+.extend-full {
+    flex: 100 !important;
+}
+
 // Remove the user's ability to select text
 *:not(input) {
     -webkit-touch-callout: none;

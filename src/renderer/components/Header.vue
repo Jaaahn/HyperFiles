@@ -1,11 +1,14 @@
 <template>
-    <div id="header">
-        <hy-flex-container :allowBreak="false">
-            <hy-button @click="$router.push('/')" :extend="false" type="transparent"> <i class="icon-arrow-down rotate90deg"></i> </hy-button>
+    <div class="header">
+        <hy-flex-container :allowBreak="false" ref="flexContainer">
+            <hy-button v-if="$route.path != '/'" @click="$router.back()" type="transparent"> <i class="icon-arrow-down rotate90deg"></i> {{ useMinimalBackBtn ? "" : "Back" }} </hy-button>
+            <div v-else class="homeIcon">
+                <i class="icon-home"></i>
+            </div>
 
-            <h3>Connected to {{ currentProfileInfo.name }}</h3>
+            <h3 class="extend-full">{{ title }}</h3>
 
-            <hy-button @click="$emit('reload')" :extend="false" type="transparent"> <i class="icon-reload"></i> Refresh</hy-button>
+            <slot />
         </hy-flex-container>
     </div>
 </template>
@@ -14,16 +17,37 @@
 export default {
     name: "Header",
     props: {
-        currentProfileInfo: null,
+        title: String,
+        useMinimalBackBtn: {
+            type: Boolean,
+            default: true,
+        },
+        isSftpHeader: {
+            type: Boolean,
+            default: false,
+        },
     },
-    data() {
-        return {};
+    methods: {
+        adaptWidth() {
+            if (this.isSftpHeader) {
+                this.$refs.flexContainer.$el.style.width = "min(calc(100% - 20px), 2000px)";
+            } else {
+                this.$refs.flexContainer.$el.style.width = "min(1200px, 95vw)";
+            }
+        },
+    },
+    watch: {
+        isSftpHeader: "adaptWidth",
+    },
+    mounted() {
+        this.adaptWidth();
     },
 };
 </script>
 
 <style lang="scss" scoped>
-#header {
+.header {
+    top: 0;
     height: 60px;
     width: 100vw;
     z-index: 100;
@@ -37,10 +61,14 @@ export default {
         left: 50%;
         transform: translate(-50%, -50%);
         position: relative;
-        width: min(calc(100% - 20px), 2000px);
 
-        .hyper-button :deep(button) {
+        .hyper-button :deep(button),
+        :slotted(.hyper-button :deep(button)) {
             padding: 10px;
+        }
+
+        .homeIcon {
+            padding: 10px; // Same as HyperUI Button
         }
     }
 }

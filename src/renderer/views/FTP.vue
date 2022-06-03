@@ -1,5 +1,7 @@
 <template>
-    <Header :currentProfileInfo="currentProfileInfo" @reload="reloadFiles()" />
+    <Header :title="`Connected to ${currentProfileInfo.name}`" :isSftpHeader="true">
+        <hy-button @click="reloadFiles()" :extend="false" type="transparent"> <i class="icon-reload"></i> Refresh</hy-button>
+    </Header>
 
     <hy-main id="ftp" maxWidth="2000px">
         <FilesSplitView v-if="currentProfileInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :profileInfo="currentProfileInfo" :paths="paths" :loadingFiles="loadingFiles" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" @updatePaths="updatePaths" />
@@ -7,7 +9,6 @@
 </template>
 
 <script>
-let remote = require("@electron/remote");
 let sftpClient = require("ssh2-sftp-client");
 let fs = require("fs");
 let fsp = require("fs/promises");

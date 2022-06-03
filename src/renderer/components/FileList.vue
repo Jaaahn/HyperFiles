@@ -26,7 +26,7 @@
                             Open in file explorer
                         </hy-button>
 
-                        <hy-button @click="openCurrentDirectoryInEditor()">
+                        <hy-button @click="openCurrentDirectoryInEditor()" v-if="settings.editorPath != ''">
                             <i class="icon-arrow-up-right-from-square"></i>
                             Open in editor
                         </hy-button>

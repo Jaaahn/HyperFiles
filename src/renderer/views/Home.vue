@@ -28,11 +28,16 @@
             <p>No profiles available. Create one or <router-link to="/settings">import profiles</router-link>.</p>
         </div>
 
-        <hy-button @click="createNewProfile()" id="newBtn" type="primary">Create new profile <i class="icon-plus"></i> </hy-button>
+        <hy-button @click="openNewProfileModal()" id="newBtn" type="primary"> <i class="icon-plus"></i> Create new profile </hy-button>
     </hy-main>
 
     <Modal :open="editing.open" @close="editing.open = false">
         <edit-profile v-if="editing.profile" :profileData="editing.profile" />
+    </Modal>
+
+    <Modal :open="newProfile.open" @close="newProfile.open = false">
+        <edit-profile v-if="newProfile.profile" :profileData="newProfile.profile" />
+        <hy-button @click="addNewProfile()" type="primary"> <i class="icon-plus"></i> Add new profile</hy-button>
     </Modal>
 </template>
 
@@ -47,8 +52,6 @@ import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 import _ from "lodash";
 
-let fsp = require("fs/promises");
-let { dialog } = require("@electron/remote");
 let keytar = require("keytar");
 
 export default {
@@ -56,6 +59,10 @@ export default {
     data() {
         return {
             editing: {
+                open: false,
+                profile: null,
+            },
+            newProfile: {
                 open: false,
                 profile: null,
             },
@@ -70,10 +77,10 @@ export default {
         },
     },
     methods: {
-        createNewProfile() {
+        openNewProfileModal() {
             let id = generateId();
 
-            this.profiles.push({
+            this.newProfile.profile = {
                 id,
                 name: "New profile",
                 remote: {
@@ -86,9 +93,13 @@ export default {
                 local: {
                     path: "/",
                 },
-            });
+            };
 
-            this.editProfile(id);
+            this.newProfile.open = true;
+        },
+        addNewProfile() {
+            this.profiles.push(_.cloneDeep(this.newProfile.profile));
+            this.newProfile.open = false;
         },
         cloneProfile(profileId) {
             let profile = this.profiles.find((profile) => profile.id == profileId);

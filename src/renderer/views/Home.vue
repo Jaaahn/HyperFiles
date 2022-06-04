@@ -8,19 +8,7 @@
 
         <div v-if="sortedProfiles.length > 0" id="profiles">
             <transition-group tag="section" name="profiles" appear>
-                <hy-section class="profile" v-for="profile in sortedProfiles" @dblclick.native="$router.push(`/ftp/${profile.id}`)" :key="profile.id">
-                    <hy-flex-container>
-                        <div class="name">
-                            <h3>{{ profile.name }}</h3>
-                            <p>{{ profile.remote.host }} at {{ profile.remote.port }}</p>
-                        </div>
-
-                        <hy-button type="transparent" :extend="false" @click="editProfile(profile.id)"> <i class="icon-pen"></i> </hy-button>
-                        <hy-button type="transparent" :extend="false" @click="deleteProfile(profile.id)"> <i class="icon-trash"></i> </hy-button>
-                        <hy-button type="transparent" :extend="false" @click="cloneProfile(profile.id)"> <i class="icon-copy"></i> </hy-button>
-                        <hy-button type="secondary" :extend="false" @click="$router.push(`/ftp/${profile.id}`)" id="openBtn"> Connect <i class="icon-chevron-down"></i> </hy-button>
-                    </hy-flex-container>
-                </hy-section>
+                <ProfileItem v-for="profile in sortedProfiles" :profile="profile" @editProfile="editProfile" :key="profile.id" />
             </transition-group>
         </div>
 
@@ -45,6 +33,7 @@
 import EditProfile from "../components/EditProfile.vue";
 import Modal from "../components/Modal.vue";
 import Header from "../components/Header.vue";
+import ProfileItem from "../components/ProfileItem.vue";
 
 import { profiles, settings } from "../state.js";
 import generateId from "../utils/generateId.js";
@@ -101,31 +90,14 @@ export default {
             this.profiles.push(_.cloneDeep(this.newProfile.profile));
             this.newProfile.open = false;
         },
-        cloneProfile(profileId) {
-            let profile = this.profiles.find((profile) => profile.id == profileId);
-            let profileClone = _.cloneDeep(profile);
-
-            profileClone.id = generateId();
-            profileClone.name += " clone";
-
-            this.profiles.push(profileClone);
-        },
         editProfile(profileId) {
             this.editing.profile = this.profiles.find((profile) => profile.id == profileId);
             this.editing.open = true;
         },
-        deleteProfile(profileId) {
-            this.editing.profile = false;
-            let profile = this.profiles.find((profile) => profile.id == profileId);
-
-            if (!confirm(`Shure to delete "${profile.name}"?`)) return;
-
-            let index = this.profiles.indexOf(profile);
-            this.profiles.splice(index, 1);
-        },
     },
     components: {
         EditProfile,
+        ProfileItem,
         Modal,
         Header,
     },
@@ -147,29 +119,6 @@ export default {
 <style lang="scss" scoped>
 #home {
     margin-top: 120px;
-
-    .profile {
-        cursor: pointer;
-
-        .name {
-            h3 {
-                margin: 0;
-            }
-
-            p {
-                margin: 0;
-                color: gray;
-            }
-        }
-
-        #openBtn {
-            padding-left: 50px;
-
-            .icon-chevron-down::before {
-                transform: rotate(-90deg);
-            }
-        }
-    }
 
     #noProfiles {
         color: gray;

@@ -1,6 +1,6 @@
 {
     "name": "HyperFiles",
-    "version": "1.0.0",
+    "version": "1.0.5",
     "main": "./src/index.js",
     "description": "HyperFiles - Do SFTP the easy way",
     "author": {
@@ -62,7 +62,7 @@
                 {
                     "name": "@electron-forge/maker-squirrel",
                     "config": {
-                        "name": "FTP_Client"
+                        "name": "HyperFiles"
                     }
                 },
                 {

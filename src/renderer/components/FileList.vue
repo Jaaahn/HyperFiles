@@ -4,16 +4,20 @@
             <h3>{{ _.capitalize(type) }}</h3>
 
             <hy-flex-container :allowBreak="false">
+                <!-- Step back the folder structure -->
                 <hy-button @click="openParentFolder()" :extend="false" :disabled="paths[type] == '/'" type="transparent">
                     <i class="icon-chevron-down"></i>
                 </hy-button>
 
+                <!-- Path -->
                 <input :value="paths[type]" @keyup="updatePaths($event)" />
 
+                <!-- Select path via finder -->
                 <hy-button v-if="type == 'local'" @click="selectPathWithFinder()" :extend="false" type="transparent">
                     <i class="icon-target"></i>
                 </hy-button>
 
+                <!-- Integrations / Open folder in... -->
                 <hy-popover v-if="type == 'local'" v-model="openDirectoryShown">
                     <template #element>
                         <hy-button @click="openDirectoryShown = !openDirectoryShown" :extend="false" type="transparent">
@@ -33,6 +37,7 @@
                     </template>
                 </hy-popover>
 
+                <!-- Search -->
                 <hy-popover v-model="search.dialogShown">
                     <template #element>
                         <hy-button @click="search.dialogShown = !search.dialogShown" :extend="false" type="transparent">
@@ -54,14 +59,25 @@
                     </template>
                 </hy-popover>
 
+                <!-- Show / hide Dotfiles -->
                 <hy-button @click="hideDotFiles = !hideDotFiles" :extend="false" type="transparent">
                     <i class="icon-eye-slash" v-if="hideDotFiles == true" title="Switch to displaying all files"></i>
                     <i class="icon-eye" v-if="hideDotFiles == false" title="Switch to hiding Dotfiles"></i>
                 </hy-button>
 
-                <hy-button @click="openNewDirDialogue()" :extend="false" type="transparent">
-                    <i class="icon-folder-plus"></i>
-                </hy-button>
+                <!-- New directory -->
+                <hy-popover v-model="newDir.open">
+                    <template #element>
+                        <hy-button @click="this.newDir.open = !this.newDir.open" :extend="false" type="transparent">
+                            <i class="icon-folder-plus"></i>
+                        </hy-button>
+                    </template>
+                    <template #popover>
+                        <h4>New directory in {{ type }}</h4>
+                        <hy-input v-model="newDir.name" placeholder="Name of new directory" />
+                        <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary"> <i class="icon-plus"></i> </hy-button>
+                    </template>
+                </hy-popover>
             </hy-flex-container>
         </div>
 
@@ -87,17 +103,10 @@
             <p v-if="searchedFiles.length != 0">There are hidden Dotfiles</p>
         </div>
     </div>
-
-    <Modal :open="newDir.open" @close="newDir.open = false">
-        <h2>New directory in {{ type }}</h2>
-        <hy-input v-model="newDir.name" placeholder="Name of new directory" />
-        <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary"> <i class="icon-plus"></i> </hy-button>
-    </Modal>
 </template>
 
 <script>
 import FileItem from "./FileItem.vue";
-import Modal from "./Modal.vue";
 
 import _ from "lodash";
 
@@ -214,10 +223,6 @@ export default {
             }
 
             this.newDir.loading = false;
-        },
-        openNewDirDialogue() {
-            this.newDir.name = "";
-            this.newDir.open = true;
         },
         updatePaths(event) {
             if (event.code != "Enter") return;
@@ -365,7 +370,6 @@ export default {
     },
     components: {
         FileItem,
-        Modal,
     },
 };
 </script>

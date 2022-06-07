@@ -14,7 +14,7 @@
                     <i class="icon-target"></i>
                 </hy-button>
 
-                <hy-popover v-if="type == 'local'" v-model="openDirectoryShown" :hover="true">
+                <hy-popover v-if="type == 'local'" v-model="openDirectoryShown">
                     <template #element>
                         <hy-button @click="openDirectoryShown = !openDirectoryShown" :extend="false" type="transparent">
                             <i class="icon-arrow-up-right-from-square" title="Open current directory"></i>
@@ -33,6 +33,27 @@
                     </template>
                 </hy-popover>
 
+                <hy-popover v-model="search.dialogShown">
+                    <template #element>
+                        <hy-button @click="search.dialogShown = !search.dialogShown" :extend="false" type="transparent">
+                            <i class="icon-search" title="Search files"></i>
+                        </hy-button>
+                    </template>
+                    <template #popover>
+                        <hy-flex-container>
+                            <hy-input v-model="search.term" placeholder="Enter search term"></hy-input>
+                            <hy-button
+                                @click="
+                                    search.term = '';
+                                    search.dialogShown = false;
+                                "
+                            >
+                                <i class="icon-cross"></i>
+                            </hy-button>
+                        </hy-flex-container>
+                    </template>
+                </hy-popover>
+
                 <hy-button @click="hideDotFiles = !hideDotFiles" :extend="false" type="transparent">
                     <i class="icon-eye-slash" v-if="hideDotFiles == true" title="Switch to displaying all files"></i>
                     <i class="icon-eye" v-if="hideDotFiles == false" title="Switch to hiding Dotfiles"></i>
@@ -42,6 +63,11 @@
                     <i class="icon-folder-plus"></i>
                 </hy-button>
             </hy-flex-container>
+        </div>
+
+        <div id="searchNotice" v-if="search.term.trim() != ''" @click="search.term = ''">
+            <p>Searching for "{{ search.term.trim() }}"</p>
+            <p><i class="icon-cross"></i></p>
         </div>
 
         <div class="files">
@@ -55,8 +81,10 @@
             <h3>Invalid Path</h3>
         </div>
         <div class="viewInfo" v-else-if="filteredFiles.length == 0">
-            <h3>Empty Directory</h3>
-            <p v-if="files.length != 0">There are hidden Dotfiles</p>
+            <h3 v-if="this.search.term.trim() != ''">No search results</h3>
+            <h3 v-else>Empty directory</h3>
+
+            <p v-if="searchedFiles.length != 0">There are hidden Dotfiles</p>
         </div>
     </div>
 
@@ -107,13 +135,31 @@ export default {
             watchedFiles: [],
             fileWatcher: null,
             openDirectoryShown: false,
+            search: {
+                dialogShown: false,
+                term: "",
+            },
             settings,
             _,
         };
     },
     computed: {
+        // files -> searchedFiles -> filteredFiles => Will be displayed to the user
         filteredFiles() {
-            return this.filterFiles(this.files, this.hideDotFiles);
+            // Check if file is a dotfile
+            return this.searchedFiles.filter((file) => {
+                if (this.hideDotFiles == false) return true; // Allow all files
+                return file.name[0] != ".";
+            });
+        },
+        searchedFiles() {
+            return this.files.filter((file) => {
+                // No search applied => Allow every item
+                if (this.search.term.trim() == "") return true;
+
+                // Check if filename includes search term => if yes, allow it
+                return file.name.trim().toLowerCase().includes(this.search.term.trim().toLowerCase());
+            });
         },
         isPathInvalid() {
             if (this.type == "local") return this.paths.localIsInvalid;
@@ -179,12 +225,6 @@ export default {
 
             this.$emit("updatePaths", path, this.type);
             this.closeFileWatcher();
-        },
-        filterFiles(files, filterDotFilesOut) {
-            return files.filter((file) => {
-                if (filterDotFilesOut == false) return true;
-                return file.name[0] != "."; // Return true if filename doesn't start with "."
-            });
         },
         watchFileStartStop(value, file) {
             if (this.type != "local") return;
@@ -330,7 +370,7 @@ export default {
             transform: rotate(90deg);
         }
 
-        .hyper-flexcontainer {
+        & > .hyper-flexcontainer {
             margin: 0;
             margin-bottom: 5px;
 
@@ -346,12 +386,35 @@ export default {
                 min-width: 0px;
             }
 
-            .hyper-button :deep(button) {
+            .hyper-button :deep(button),
+            .hyper-input :deep(input) {
                 padding: 10px;
             }
 
             .hyper-popover {
                 flex: 0;
+            }
+        }
+    }
+
+    #searchNotice {
+        display: flex;
+        justify-content: space-between;
+        cursor: pointer;
+        background-color: var(--color-gray-3);
+        border-radius: var(--element-border-radius);
+        padding: 10px;
+        margin: 10px 0;
+
+        p {
+            color: gray;
+            margin: 0;
+            font-size: 16px;
+            transition: var(--element-transition);
+            transition-property: color;
+
+            &:last-of-type:hover {
+                color: var(--accent-color);
             }
         }
     }

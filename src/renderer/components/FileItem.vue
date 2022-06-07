@@ -51,10 +51,10 @@
 
                     <hy-button @click="openFile()"><i class="icon-arrow-up-right-from-square"></i> Open in default app</hy-button>
 
-                    <hy-button @click="uploadFolderContent()" v-if="isDir == true"><i class="icon-upload"></i> Upload content</hy-button>
-
                     <hy-button @click="$emit('watchFile', true)" v-if="watchingFile == false"><i class="icon-history"></i> Upload on change</hy-button>
                     <hy-button @click="$emit('watchFile', false)" v-else><i class="icon-history"></i> Stop upload on change</hy-button>
+
+                    <hy-button @click="uploadFolderContent()" v-if="isDir == true"><i class="icon-upload"></i> Upload content</hy-button>
                 </template>
             </hy-popover>
         </div>

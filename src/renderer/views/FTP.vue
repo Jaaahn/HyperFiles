@@ -1,5 +1,33 @@
 <template>
     <Header :title="`Connected to ${currentProfileInfo.name}`" :isSftpHeader="true">
+        <hy-popover v-model="filterDialogShown">
+            <template #element>
+                <hy-button @click="filterDialogShown = !filterDialogShown" id="filterOpenPopoverBtn" :extend="false" type="transparent">
+                    <i class="icon-sort-ascending" title="Filter and sort files"></i>
+                </hy-button>
+            </template>
+            <template #popover>
+                <hy-sub-section title="Sort by">
+                    <hy-select v-model="settings.filters.sortBy">
+                        <option value="filename">Filename</option>
+                        <option value="size">File size</option>
+                        <option value="lastModified">Last modified</option>
+                    </hy-select>
+                </hy-sub-section>
+
+                <hy-sub-section title="Sort direction">
+                    <hy-select v-model="settings.filters.sortDirection">
+                        <option value="ascending">Ascending</option>
+                        <option value="descending">Descending</option>
+                    </hy-select>
+                </hy-sub-section>
+
+                <!-- <hy-sub-section>
+                    <hy-checkbox v-model="settings.filters.separateDirs">Separate directories</hy-checkbox>
+                </hy-sub-section> -->
+            </template>
+        </hy-popover>
+
         <hy-button @click="reloadFiles()" :extend="false" type="transparent"> <i class="icon-reload"></i> Refresh</hy-button>
     </Header>
 
@@ -15,7 +43,7 @@ let fsp = require("fs/promises");
 let pathModule = require("path");
 let keytar = require("keytar");
 
-import { profiles } from "../state.js";
+import { profiles, settings } from "../state.js";
 import getAccountInfoString from "../utils/getAccountInfoString.js";
 
 import Header from "../components/Header.vue";
@@ -42,6 +70,8 @@ export default {
                 remote: true,
             },
             profiles,
+            settings,
+            filterDialogShown: false,
         };
     },
     methods: {
@@ -201,5 +231,9 @@ export default {
     flex-direction: column;
     position: relative;
     position: fixed;
+}
+
+#filterOpenPopoverBtn :deep(button) {
+    padding: 10px;
 }
 </style>

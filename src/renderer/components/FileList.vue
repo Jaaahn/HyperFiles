@@ -71,7 +71,7 @@
         </div>
 
         <div class="files">
-            <FileItem class="file" v-for="file in filteredFiles" :file="file" :client="client" :paths="paths" :type="type" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchLocal="$emit('fetchLocal')" @fetchRemote="$emit('fetchRemote')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file)" />
+            <FileItem class="file" v-for="file in sortedFiles" :file="file" :client="client" :paths="paths" :type="type" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchLocal="$emit('fetchLocal')" @fetchRemote="$emit('fetchRemote')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file)" />
         </div>
 
         <div class="viewInfo" v-if="loadingFiles[type]">
@@ -144,7 +144,32 @@ export default {
         };
     },
     computed: {
-        // files -> searchedFiles -> filteredFiles => Will be displayed to the user
+        // files -> searchedFiles -> filteredFiles -> sortedFiles => Will be displayed to the user
+        sortedFiles() {
+            let files = _.cloneDeep(this.filteredFiles);
+
+            return files.sort((a, b) => {
+                let dataA;
+                let dataB;
+
+                if (this.settings.filters.sortBy == "filename") {
+                    dataA = a.name;
+                    dataB = b.name;
+                } else if (this.settings.filters.sortBy == "size") {
+                    dataA = a.size;
+                    dataB = b.size;
+                } else if (this.settings.filters.sortBy == "lastModified") {
+                    dataA = a.modifyTime;
+                    dataB = b.modifyTime;
+                }
+
+                let multiplier = this.settings.filters.sortDirection == "ascending" ? 1 : -1;
+
+                if (dataA < dataB) return -1 * multiplier;
+                if (dataA > dataB) return 1 * multiplier;
+                return 0; // Equal
+            });
+        },
         filteredFiles() {
             // Check if file is a dotfile
             return this.searchedFiles.filter((file) => {

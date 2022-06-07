@@ -3,7 +3,7 @@
         <hy-popover v-model="filterDialogShown">
             <template #element>
                 <hy-button @click="filterDialogShown = !filterDialogShown" id="filterOpenPopoverBtn" :extend="false" type="transparent">
-                    <i class="icon-sort-ascending" title="Filter and sort files"></i>
+                    <i class="icon-sort-descending" title="Filter and sort files"></i>
                 </hy-button>
             </template>
             <template #popover>
@@ -16,9 +16,17 @@
                 </hy-sub-section>
 
                 <hy-sub-section title="Sort direction">
-                    <hy-select v-model="settings.filters.sortDirection">
-                        <option value="ascending">Ascending</option>
-                        <option value="descending">Descending</option>
+                    <hy-select v-if="settings.filters.sortBy == 'filename'" v-model="settings.filters.sortDirection">
+                        <option value="ascending">A to Z</option>
+                        <option value="descending">Z to A</option>
+                    </hy-select>
+                    <hy-select v-if="settings.filters.sortBy == 'size'" v-model="settings.filters.sortDirection">
+                        <option value="ascending">Smallest to biggest</option>
+                        <option value="descending">Biggest to smallest</option>
+                    </hy-select>
+                    <hy-select v-if="settings.filters.sortBy == 'lastModified'" v-model="settings.filters.sortDirection">
+                        <option value="descending">Newest to oldest</option>
+                        <option value="ascending">Oldest to newest</option>
                     </hy-select>
                 </hy-sub-section>
 
@@ -233,7 +241,15 @@ export default {
     position: fixed;
 }
 
-#filterOpenPopoverBtn :deep(button) {
-    padding: 10px;
+.hyper-popover {
+    :deep(button) {
+        padding: 10px;
+    }
+
+    :deep(select) {
+        padding-top: 10px;
+        padding-left: 10px;
+        padding-bottom: 10px;
+    }
 }
 </style>

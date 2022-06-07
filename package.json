@@ -45,6 +45,7 @@
         "@vueuse/core": "^8.4.0",
         "chokidar": "^3.5.3",
         "electron-squirrel-startup": "^1.0.0",
+        "filesize": "^9.0.1",
         "hyper-modals": "^1.0.4",
         "keytar": "^7.9.0",
         "lodash": "^4.17.21",

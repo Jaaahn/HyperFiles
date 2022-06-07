@@ -13,7 +13,10 @@
         <div class="info">
             <p class="name" :title="file.name">{{ file.name }}</p>
 
-            <p class="details"><i class="icon-clock"></i> {{ timeDisplay }}</p>
+            <p class="details">
+                <span><i class="icon-clock"></i> {{ timeDisplay }}</span>
+                <span><i class="icon-weight"></i> {{ sizeDisplay }}</span>
+            </p>
         </div>
 
         <div v-if="watchingFile" id="watchingFileIndicator"></div>
@@ -66,6 +69,7 @@ let fsp = require("fs/promises");
 let shell = require("electron").shell;
 let pathModule = require("path");
 import { timeDifferenceString } from "@jaaahn/shared-utils";
+import filesize from "filesize";
 
 export default {
     name: "FileItem",
@@ -117,6 +121,9 @@ export default {
         },
         timeDisplay() {
             return timeDifferenceString(new Date(this.file.modifyTime));
+        },
+        sizeDisplay() {
+            return filesize(this.file.size, { standard: "jedec", round: 1 });
         },
         isLoadingAnyAction() {
             if (this.loading.transfer) return true;
@@ -316,13 +323,16 @@ export default {
 
         .details {
             margin: 0;
-            font-size: 15px;
+            width: 100%;
             color: gray;
-
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;
-            width: 100%;
+
+            span {
+                font-size: 15px;
+                margin-right: 15px;
+            }
         }
     }
 

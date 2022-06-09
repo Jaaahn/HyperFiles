@@ -423,6 +423,14 @@ export default {
                 font-size: 15px;
                 font-family: monospace;
                 min-width: 0px;
+                transition: var(--element-transition);
+                transition-property: background-color;
+
+                &:hover,
+                &:active,
+                &:focus {
+                    background-color: var(--button-light-blue-hover);
+                }
             }
 
             .hyper-button :deep(button),

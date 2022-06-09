@@ -157,13 +157,13 @@ export default {
         sortedFiles() {
             let files = _.cloneDeep(this.filteredFiles);
 
-            return files.sort((a, b) => {
+            files.sort((a, b) => {
                 let dataA;
                 let dataB;
 
                 if (this.settings.filters.sortBy == "filename") {
-                    dataA = a.name;
-                    dataB = b.name;
+                    dataA = a.name.toLowerCase();
+                    dataB = b.name.toLowerCase();
                 } else if (this.settings.filters.sortBy == "size") {
                     dataA = a.size;
                     dataB = b.size;
@@ -178,6 +178,16 @@ export default {
                 if (dataA > dataB) return 1 * multiplier;
                 return 0; // Equal
             });
+
+            if (this.settings.filters.separateDirs) {
+                files.sort((a, b) => {
+                    if (a.type == "d" && b.type != "d") return -1;
+                    if (a.type != "d" && b.type == "d") return 1;
+                    return 0;
+                });
+            }
+
+            return files;
         },
         filteredFiles() {
             // Check if file is a dotfile

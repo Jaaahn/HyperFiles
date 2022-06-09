@@ -30,9 +30,9 @@
                     </hy-select>
                 </hy-sub-section>
 
-                <!-- <hy-sub-section>
+                <hy-sub-section>
                     <hy-checkbox v-model="settings.filters.separateDirs">Separate directories</hy-checkbox>
-                </hy-sub-section> -->
+                </hy-sub-section>
             </template>
         </hy-popover>
 

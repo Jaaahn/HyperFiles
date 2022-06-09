@@ -1,6 +1,6 @@
 <template>
     <router-view></router-view>
-    <div id="modals"></div>
+    <div id="hyper-modals-container"></div>
 </template>
 
 <script>

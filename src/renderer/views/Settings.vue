@@ -11,14 +11,12 @@
         </hy-section>
 
         <h2>Integrations</h2>
-        <hy-section>
-            <hy-sub-section title="Editor" pre="Absolute path to your prefered editor">
-                <hy-flex-container :allowBreak="false">
-                    <hy-input v-model="settings.editorPath" v-if="settings.editorPath != undefined" placeholder="Absolute path to your prefered editor"></hy-input>
-                    <hy-button @click="selectEditorPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
-                </hy-flex-container>
-            </hy-sub-section>
-        </hy-section>
+        <hy-sub-section title="Editor" pre="Absolute path to your prefered editor">
+            <hy-flex-container :allowBreak="false">
+                <hy-input v-model="settings.editorPath" v-if="settings.editorPath != undefined" placeholder="Absolute path to your prefered editor"></hy-input>
+                <hy-button @click="selectEditorPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
+            </hy-flex-container>
+        </hy-sub-section>
     </hy-main>
 </template>
 
@@ -103,5 +101,10 @@ export default {
 <style lang="scss" scoped>
 .settings {
     margin-top: 120px;
+
+    .hyper-subsection {
+        background-color: var(--section-bg-color);
+        padding: var(--section-padding);
+    }
 }
 </style>

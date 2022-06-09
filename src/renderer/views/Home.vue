@@ -19,19 +19,18 @@
         <hy-button @click="openNewProfileModal()" id="newBtn" type="primary"> <i class="icon-plus"></i> Create new profile </hy-button>
     </hy-main>
 
-    <Modal :open="editing.open" @close="editing.open = false">
+    <hy-modal v-model="editing.open">
         <edit-profile v-if="editing.profile" :profileData="editing.profile" />
-    </Modal>
+    </hy-modal>
 
-    <Modal :open="newProfile.open" @close="newProfile.open = false">
+    <hy-modal v-model="newProfile.open">
         <edit-profile v-if="newProfile.profile" :profileData="newProfile.profile" />
         <hy-button @click="addNewProfile()" type="primary"> <i class="icon-plus"></i> Add new profile</hy-button>
-    </Modal>
+    </hy-modal>
 </template>
 
 <script>
 import EditProfile from "../components/EditProfile.vue";
-import Modal from "../components/Modal.vue";
 import Header from "../components/Header.vue";
 import ProfileItem from "../components/ProfileItem.vue";
 
@@ -98,7 +97,6 @@ export default {
     components: {
         EditProfile,
         ProfileItem,
-        Modal,
         Header,
     },
     async created() {

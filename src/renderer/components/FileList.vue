@@ -10,74 +10,77 @@
                 </hy-button>
 
                 <!-- Path -->
-                <input :value="paths[type]" @keyup="updatePaths($event)" />
+                <input :value="paths[type]" @keyup="updatePaths($event)" @focus="expandPathInput = true" @blur="expandPathInput = false" />
 
-                <!-- Select path via finder -->
-                <hy-button v-if="type == 'local'" @click="selectPathWithFinder()" :extend="false" type="transparent">
-                    <i class="icon-target"></i>
-                </hy-button>
+                <!-- Actions -->
+                <hy-flex-container id="actions" v-if="expandPathInput == false" :wrap="false" :allowBreak="false">
+                    <!-- Select path via finder -->
+                    <hy-button v-if="type == 'local'" @click="selectPathWithFinder()" :extend="false" type="transparent">
+                        <i class="icon-target"></i>
+                    </hy-button>
 
-                <!-- Integrations / Open folder in... -->
-                <hy-popover v-if="type == 'local'" v-model="openDirectoryShown">
-                    <template #element>
-                        <hy-button @click="openDirectoryShown = !openDirectoryShown" :extend="false" type="transparent">
-                            <i class="icon-arrow-up-right-from-square" title="Open current directory"></i>
-                        </hy-button>
-                    </template>
-                    <template #popover>
-                        <hy-button @click="openCurrentDirectoryInFinder()">
-                            <i class="icon-arrow-up-right-from-square"></i>
-                            Open in file explorer
-                        </hy-button>
-
-                        <hy-button @click="openCurrentDirectoryInEditor()" v-if="settings.editorPath != ''">
-                            <i class="icon-arrow-up-right-from-square"></i>
-                            Open in editor
-                        </hy-button>
-                    </template>
-                </hy-popover>
-
-                <!-- Search -->
-                <hy-popover v-model="search.dialogShown">
-                    <template #element>
-                        <hy-button @click="search.dialogShown = !search.dialogShown" :extend="false" type="transparent">
-                            <i class="icon-search" title="Search files"></i>
-                        </hy-button>
-                    </template>
-                    <template #popover>
-                        <hy-flex-container>
-                            <hy-input v-model="search.term" placeholder="Enter search term"></hy-input>
-                            <hy-button
-                                @click="
-                                    search.term = '';
-                                    search.dialogShown = false;
-                                "
-                            >
-                                <i class="icon-cross"></i>
+                    <!-- Integrations / Open folder in... -->
+                    <hy-popover v-if="type == 'local'" v-model="openDirectoryShown">
+                        <template #element>
+                            <hy-button @click="openDirectoryShown = !openDirectoryShown" :extend="false" type="transparent">
+                                <i class="icon-arrow-up-right-from-square" title="Open current directory"></i>
                             </hy-button>
-                        </hy-flex-container>
-                    </template>
-                </hy-popover>
+                        </template>
+                        <template #popover>
+                            <hy-button @click="openCurrentDirectoryInFinder()">
+                                <i class="icon-arrow-up-right-from-square"></i>
+                                Open in file explorer
+                            </hy-button>
 
-                <!-- Show / hide Dotfiles -->
-                <hy-button @click="hideDotFiles = !hideDotFiles" :extend="false" type="transparent">
-                    <i class="icon-eye-slash" v-if="hideDotFiles == true" title="Switch to displaying all files"></i>
-                    <i class="icon-eye" v-if="hideDotFiles == false" title="Switch to hiding Dotfiles"></i>
-                </hy-button>
+                            <hy-button @click="openCurrentDirectoryInEditor()" v-if="settings.editorPath != ''">
+                                <i class="icon-arrow-up-right-from-square"></i>
+                                Open in editor
+                            </hy-button>
+                        </template>
+                    </hy-popover>
 
-                <!-- New directory -->
-                <hy-popover v-model="newDir.open">
-                    <template #element>
-                        <hy-button @click="this.newDir.open = !this.newDir.open" :extend="false" type="transparent">
-                            <i class="icon-folder-plus"></i>
-                        </hy-button>
-                    </template>
-                    <template #popover>
-                        <h4>New directory in {{ type }}</h4>
-                        <hy-input v-model="newDir.name" placeholder="Name of new directory" />
-                        <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary"> <i class="icon-plus"></i> </hy-button>
-                    </template>
-                </hy-popover>
+                    <!-- Search -->
+                    <hy-popover v-model="search.dialogShown">
+                        <template #element>
+                            <hy-button @click="search.dialogShown = !search.dialogShown" :extend="false" type="transparent">
+                                <i class="icon-search" title="Search files"></i>
+                            </hy-button>
+                        </template>
+                        <template #popover>
+                            <hy-flex-container>
+                                <hy-input v-model="search.term" placeholder="Enter search term"></hy-input>
+                                <hy-button
+                                    @click="
+                                        search.term = '';
+                                        search.dialogShown = false;
+                                    "
+                                >
+                                    <i class="icon-cross"></i>
+                                </hy-button>
+                            </hy-flex-container>
+                        </template>
+                    </hy-popover>
+
+                    <!-- Show / hide Dotfiles -->
+                    <hy-button @click="hideDotFiles = !hideDotFiles" :extend="false" type="transparent">
+                        <i class="icon-eye-slash" v-if="hideDotFiles == true" title="Switch to displaying all files"></i>
+                        <i class="icon-eye" v-if="hideDotFiles == false" title="Switch to hiding Dotfiles"></i>
+                    </hy-button>
+
+                    <!-- New directory -->
+                    <hy-popover v-model="newDir.open">
+                        <template #element>
+                            <hy-button @click="this.newDir.open = !this.newDir.open" :extend="false" type="transparent">
+                                <i class="icon-folder-plus"></i>
+                            </hy-button>
+                        </template>
+                        <template #popover>
+                            <h4>New directory in {{ type }}</h4>
+                            <hy-input v-model="newDir.name" placeholder="Name of new directory" />
+                            <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary"> <i class="icon-plus"></i> </hy-button>
+                        </template>
+                    </hy-popover>
+                </hy-flex-container>
             </hy-flex-container>
         </div>
 
@@ -148,6 +151,7 @@ export default {
                 dialogShown: false,
                 term: "",
             },
+            expandPathInput: false,
             settings,
             _,
         };

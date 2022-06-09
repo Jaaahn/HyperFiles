@@ -437,6 +437,10 @@ export default {
                 }
             }
 
+            #actions {
+                flex: 0;
+            }
+
             .hyper-button :deep(button),
             .hyper-input :deep(input) {
                 padding: 10px;

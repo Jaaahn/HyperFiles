@@ -25,7 +25,9 @@
 
     <hy-modal v-model="newProfile.open">
         <edit-profile v-if="newProfile.profile" :profileData="newProfile.profile" />
-        <hy-button @click="addNewProfile()" type="primary"> <i class="icon-plus"></i> Add new profile</hy-button>
+        <div id="addNewProfileBtnContainer">
+            <hy-button @click="addNewProfile()" :disabled="canAddNewProfile == false" type="primary"> <i class="icon-plus"></i> Add new profile</hy-button>
+        </div>
     </hy-modal>
 </template>
 
@@ -62,6 +64,13 @@ export default {
         sortedProfiles() {
             // Sort by name (alphabetically => requires toLoweCase() hack) and by id if names are identical
             return _.sortBy(this.profiles, [(profile) => profile.name.toLowerCase(), "id"], ["asc"]);
+        },
+        canAddNewProfile() {
+            let name = this.newProfile.profile?.name;
+
+            if (name != "New profile" && name != "") return true;
+
+            return false;
         },
     },
     methods: {
@@ -135,6 +144,20 @@ export default {
     .hyper-subsection {
         background-color: var(--section-bg-color);
         padding: var(--section-padding);
+    }
+}
+
+#addNewProfileBtnContainer {
+    position: sticky;
+    bottom: 0;
+    background-color: var(--section-bg-color);
+    padding-top: var(--element-padding);
+    margin-top: 40px;
+    margin-bottom: 0;
+    box-shadow: 0 -10px 20px -5px var(--element-shadow-color);
+
+    .hyper-button {
+        margin: 0;
     }
 }
 

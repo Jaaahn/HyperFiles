@@ -5,9 +5,13 @@
         <h2>Profiles</h2>
         <hy-section>
             <hy-flex-container>
-                <hy-button @click="exportConfig()" :disabled="profiles.length == 0"><i class="icon-share"></i> Export Config</hy-button>
-                <hy-button @click="importConfig()" :type="profiles.length == 0 ? 'primary' : 'secondary'"><i class="icon-import"></i> Import Config</hy-button>
+                <hy-button @click="exportConfig()" :disabled="profiles.length == 0"><i class="icon-share"></i> Export profiles to file</hy-button>
+                <hy-button @click="importConfig()" :type="profiles.length == 0 ? 'primary' : 'secondary'"><i class="icon-import"></i> Import profiles from file</hy-button>
             </hy-flex-container>
+
+            <hy-button @click="clearConfig()" :disabled="profiles.length == 0" class="deleteBtn">Delete all profiles</hy-button>
+
+            <p v-if="profilesTrash.length > 0" @click="restoreProfilesFromTrash()" class="hy-text-accent">Click here to restore deleted profiles</p>
         </hy-section>
 
         <h2>Integrations</h2>
@@ -29,6 +33,7 @@ import generateId from "../utils/generateId.js";
 
 let fsp = require("fs/promises");
 let { dialog } = require("@electron/remote");
+import _ from "lodash";
 
 export default {
     name: "Settings",
@@ -37,6 +42,7 @@ export default {
             selectedTab: "profiles",
             profiles,
             settings,
+            profilesTrash: [],
         };
     },
     methods: {
@@ -78,6 +84,20 @@ export default {
                 alert("Error while reading config");
             }
         },
+        clearConfig() {
+            if (!confirm("Are you shure to delete ALL profiles?")) return;
+
+            this.profilesTrash = _.cloneDeep(this.profiles);
+
+            this.profiles.length = 0;
+
+            console.log(this.profiles);
+            console.log(this.profilesTrash);
+        },
+        restoreProfilesFromTrash() {
+            this.profiles = _.cloneDeep(this.profilesTrash);
+            this.profilesTrash.length = 0;
+        },
         async selectEditorPath() {
             let result = await dialog.showOpenDialog({
                 defaultPath: this.settings.editorPath,
@@ -105,6 +125,10 @@ export default {
     .hyper-subsection {
         background-color: var(--section-bg-color);
         padding: var(--section-padding);
+    }
+
+    .deleteBtn :deep(button) {
+        color: var(--color-pink);
     }
 }
 </style>

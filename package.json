@@ -40,7 +40,7 @@
     },
     "dependencies": {
         "@electron/remote": "^2.0.8",
-        "@jaaahn/hyper-ui": "^2.0.2",
+        "@jaaahn/hyper-ui": "^2.1.0",
         "@jaaahn/shared-utils": "^1.0.5",
         "@vueuse/core": "^8.4.0",
         "chokidar": "^3.5.3",

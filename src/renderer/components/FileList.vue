@@ -10,7 +10,7 @@
                 </hy-button>
 
                 <!-- Path -->
-                <input :value="paths[type]" @keyup="updatePaths($event)" @focus="expandPathInput = true" @blur="expandPathInput = false" />
+                <input :value="paths[type]" @keyup="selectPathWithAddressBar($event)" @focus="expandPathInput = true" @blur="expandPathInput = false" />
 
                 <!-- Actions -->
                 <hy-flex-container id="actions" v-if="expandPathInput == false" :wrap="false" :allowBreak="false">
@@ -196,7 +196,7 @@ export default {
         filteredFiles() {
             // Check if file is a dotfile
             return this.searchedFiles.filter((file) => {
-                if (this.hideDotFiles == false) return true; // Allow all files
+                if (this.hideDotFiles == false) return true; // Allow all
                 return file.name[0] != ".";
             });
         },
@@ -238,22 +238,26 @@ export default {
 
             this.newDir.loading = false;
         },
-        updatePaths(event) {
-            if (event.code != "Enter") return;
-
-            this.$emit("updatePaths", event.target.value, this.type);
+        updatePaths(newPath) {
+            this.$emit("updatePaths", newPath, this.type);
             this.closeFileWatcher();
+            this.search.term = "";
+            this.search.dialogShown = false;
         },
         openParentFolder() {
             let newPath = pathModule.join(this.paths[this.type], "..");
-            this.$emit("updatePaths", newPath, this.type);
-            this.closeFileWatcher();
+            this.updatePaths(newPath);
         },
         openFolder(file) {
             if (file.type != "d") return;
 
-            this.$emit("updatePaths", file.path, this.type);
-            this.closeFileWatcher();
+            this.updatePaths(file.path);
+        },
+        selectPathWithAddressBar(event) {
+            // Called by the address bar input element
+            if (event.code != "Enter") return;
+
+            this.updatePaths(event.target.value);
         },
         async selectPathWithFinder() {
             if (this.type != "local") return;
@@ -267,8 +271,7 @@ export default {
 
             if (path == undefined) return;
 
-            this.$emit("updatePaths", path, this.type);
-            this.closeFileWatcher();
+            this.updatePaths(path);
         },
         watchFileStartStop(value, file) {
             if (this.type != "local") return;

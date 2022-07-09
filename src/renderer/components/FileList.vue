@@ -28,12 +28,12 @@
                         </template>
                         <template #popover>
                             <hy-button @click="openCurrentDirectoryInFinder()">
-                                <i class="icon-arrow-up-right-from-square"></i>
+                                <i class="icon-folder"></i>
                                 Open in file explorer
                             </hy-button>
 
                             <hy-button @click="openCurrentDirectoryInEditor()" v-if="settings.editorPath != ''">
-                                <i class="icon-arrow-up-right-from-square"></i>
+                                <i class="icon-pen"></i>
                                 Open in editor
                             </hy-button>
                         </template>

@@ -44,7 +44,7 @@
                 </template>
             </hy-popover>
 
-            <hy-popover v-model="moreOptions" minWidth="350px" v-if="type == 'local'">
+            <hy-popover v-model="moreOptions" minWidth="310px" v-if="type == 'local'">
                 <template #element>
                     <hy-button @click="moreOptions = !moreOptions" type="transparent" title="View more options"><i class="icon-ellipsis-circle"></i></hy-button>
                 </template>

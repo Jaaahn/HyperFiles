@@ -10,7 +10,7 @@
                 </hy-button>
 
                 <!-- Path -->
-                <input :value="paths[type]" @keyup="selectPathWithAddressBar($event)" @focus="expandPathInput = true" @blur="expandPathInput = false" />
+                <input :value="paths[type]" @keyup="selectPathWithAddressBar($event)" @focus="expandPathInput = true" @blur="expandPathInput = false" ref="pathInput" />
 
                 <!-- Actions -->
                 <hy-flex-container id="actions" v-if="expandPathInput == false" :wrap="false" :allowBreak="false">
@@ -76,7 +76,7 @@
                         </template>
                         <template #popover>
                             <h4>New directory in {{ type }}</h4>
-                            <hy-input v-model="newDir.name" placeholder="Name of new directory" />
+                            <hy-input v-model="newDir.name" placeholder="Name of new directory" ref="newDirInput" />
                             <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary" class="undoTextLeft"> <i class="icon-plus"></i> Create </hy-button>
                         </template>
                     </hy-popover>
@@ -156,8 +156,15 @@ export default {
             eventListeners: {
                 mouseEnter: null,
                 mouseLeave: null,
-                removeActivateSearchListener: null,
-                removeDismissSearchListener: null,
+
+                removeActivateSearch: null,
+                removeDismissSearch: null,
+
+                removeActivateNewDirMenu: null,
+                removeCreateDir: null,
+                removeDismissNewDirMenu: null,
+
+                removeFocusPathInput: null,
             },
             hasMouseOver: false,
             settings,
@@ -224,6 +231,8 @@ export default {
     },
     methods: {
         async createNewDir() {
+            if (this.newDir.name == "") return;
+
             this.newDir.loading = true;
             let newDirPath = pathModule.join(this.paths[this.type], this.newDir.name);
 
@@ -405,17 +414,47 @@ export default {
         this.$el.addEventListener("mouseleave", this.eventListeners.mouseLeave);
 
         // Keybindings
-        this.eventListeners.removeActivateSearchListener = addKeybinding("meta + f", () => {
+        this.eventListeners.removeActivateSearch = addKeybinding("meta + f", () => {
             if (this.hasMouseOver == false) return;
 
             this.search.dialogShown = true;
             this.$refs.searchInput.$el.children[0].focus();
         });
 
-        this.eventListeners.removeDismissSearchListener = addKeybinding("escape", () => {
+        this.eventListeners.removeDismissSearch = addKeybinding("escape", () => {
             if (this.hasMouseOver == false) return;
 
             this.search.dialogShown = false;
+            this.$refs.searchInput.$el.children[0].blur();
+        });
+
+        this.eventListeners.removeActivateNewDirMenu = addKeybinding("meta + n", () => {
+            if (this.hasMouseOver == false) return;
+
+            this.newDir.open = true;
+            this.$refs.newDirInput.$el.children[0].focus();
+        });
+
+        this.eventListeners.removeCreateNewDir = addKeybinding("enter", () => {
+            if (this.hasMouseOver == false) return;
+            if (this.newDir.open == false) return;
+
+            this.createNewDir();
+        });
+
+        this.eventListeners.removeDismissNewDirMenu = addKeybinding("escape", () => {
+            if (this.hasMouseOver == false) return;
+
+            this.newDir.open = false;
+            this.$refs.newDirInput.$el.children[0].blur();
+        });
+
+        this.eventListeners.removeFocusPathInput = addKeybinding("p", (event) => {
+            if (this.hasMouseOver == false) return;
+
+            event.preventDefault();
+
+            this.$refs.pathInput.focus();
         });
     },
     unmounted() {
@@ -423,8 +462,14 @@ export default {
         this.$el.removeEventListener("mouseleave", this.eventListeners.mouseLeave);
 
         // Keybindings
-        this.eventListeners.removeActivateSearchListener();
-        this.eventListeners.removeDismissSearchListener();
+        this.eventListeners.removeActivateSearch();
+        this.eventListeners.removeDismissSearch();
+
+        this.eventListeners.removeActivateNewDirMenu();
+        this.eventListeners.removeCreateNewDir();
+        this.eventListeners.removeDismissNewDirMenu();
+
+        this.eventListeners.removeFocusPathInput();
     },
     components: {
         FileItem,

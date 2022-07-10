@@ -54,6 +54,30 @@
                 <h4>Dismiss search dialog</h4>
                 <p>Escape</p>
             </div>
+
+            <hr />
+
+            <div class="keybinding">
+                <h4>Open new directory dialog</h4>
+                <p><i class="icon-command"></i> + N</p>
+            </div>
+
+            <div class="keybinding">
+                <h4>Confirm and create new directory</h4>
+                <p>Enter</p>
+            </div>
+
+            <div class="keybinding">
+                <h4>Dismiss create new directory dialog</h4>
+                <p>Escape</p>
+            </div>
+
+            <hr />
+
+            <div class="keybinding">
+                <h4>Modify current path</h4>
+                <p>P</p>
+            </div>
         </div>
     </hy-modal>
 

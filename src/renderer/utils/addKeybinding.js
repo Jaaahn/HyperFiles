@@ -54,8 +54,10 @@ function initializeKeybindings() {
     document.addEventListener("keydown", (event) => {
         let keyCombination = compileKeyCombination(event);
 
+        // console.log("Keypress: " + keyCombination);
+
         // Execute all registered listener function
-        keybindings[keyCombination]?.forEach((listenerFunction) => listenerFunction());
+        keybindings[keyCombination]?.forEach((listenerFunction) => listenerFunction(event));
     });
 }
 

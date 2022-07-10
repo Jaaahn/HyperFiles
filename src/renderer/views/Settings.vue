@@ -21,6 +21,11 @@
                 <hy-button @click="selectEditorPath()" :extend="false"> <i class="icon-target"></i> </hy-button>
             </hy-flex-container>
         </hy-sub-section>
+
+        <h1>About</h1>
+        <hy-sub-section>
+            <router-link to="/licences">Open-Source Licences</router-link>
+        </hy-sub-section>
     </hy-main>
 </template>
 
@@ -111,7 +116,6 @@ export default {
             }
         },
     },
-    created() {},
     components: {
         Header,
     },

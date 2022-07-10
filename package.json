@@ -1,6 +1,6 @@
 {
     "name": "HyperFiles",
-    "version": "1.2.1",
+    "version": "1.2.2",
     "main": "./src/index.js",
     "description": "HyperFiles - Do SFTP the easy way",
     "author": {
@@ -43,6 +43,7 @@
         "@jaaahn/hyper-ui": "^2.1.0",
         "@jaaahn/shared-utils": "^1.0.5",
         "@vueuse/core": "^8.4.0",
+        "axios": "^0.27.2",
         "chokidar": "^3.5.3",
         "electron-squirrel-startup": "^1.0.0",
         "filesize": "^9.0.1",
@@ -50,6 +51,7 @@
         "keytar": "^7.9.0",
         "lodash": "^4.17.21",
         "p-queue": "^7.2.0",
+        "rollup-plugin-license": "^2.8.1",
         "ssh2-sftp-client": "8.0.0",
         "vue": "^3.2.33",
         "vue-router": "^4.0.14"

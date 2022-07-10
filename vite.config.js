@@ -1,10 +1,24 @@
 import vue from "@vitejs/plugin-vue";
+import * as path from "path";
+import license from "rollup-plugin-license";
 
 /**
  * @type {import('vite').UserConfig}
  */
 export default {
-    plugins: [vue()],
+    plugins: [
+        vue(),
+        license({
+            sourcemap: true,
+            thirdParty: {
+                includePrivate: true,
+                output: {
+                    file: path.join(__dirname, "vue-dist", "open-source-licences.txt"),
+                    encoding: "utf-8",
+                },
+            },
+        }),
+    ],
     base: "",
     root: "./src/",
     publicDir: "./renderer/public/",

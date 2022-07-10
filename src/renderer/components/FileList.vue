@@ -48,7 +48,7 @@
                         </template>
                         <template #popover>
                             <hy-flex-container>
-                                <hy-input v-model="search.term" placeholder="Enter search term"></hy-input>
+                                <hy-input v-model="search.term" placeholder="Enter search term" ref="searchInput"></hy-input>
                                 <hy-button
                                     @click="
                                         search.term = '';
@@ -114,6 +114,7 @@ import FileItem from "./FileItem.vue";
 import _ from "lodash";
 
 import { settings } from "../state.js";
+import addKeybinding from "../utils/addKeybinding.js";
 
 let fsp = require("fs/promises");
 let pathModule = require("path");
@@ -147,11 +148,18 @@ export default {
             watchedFiles: [],
             fileWatcher: null,
             openDirectoryShown: false,
+            expandPathInput: false,
             search: {
                 dialogShown: false,
                 term: "",
             },
-            expandPathInput: false,
+            eventListeners: {
+                mouseEnter: null,
+                mouseLeave: null,
+                removeActivateSearchListener: null,
+                removeDismissSearchListener: null,
+            },
+            hasMouseOver: false,
             settings,
             _,
         };
@@ -385,6 +393,39 @@ export default {
             this.closeFileWatcher();
         });
     },
+    mounted() {
+        this.eventListeners.mouseEnter = () => {
+            this.hasMouseOver = true;
+        };
+        this.eventListeners.mouseLeave = () => {
+            this.hasMouseOver = false;
+        };
+
+        this.$el.addEventListener("mouseover", this.eventListeners.mouseEnter);
+        this.$el.addEventListener("mouseleave", this.eventListeners.mouseLeave);
+
+        // Keybindings
+        this.eventListeners.removeActivateSearchListener = addKeybinding("meta + f", () => {
+            if (this.hasMouseOver == false) return;
+
+            this.search.dialogShown = true;
+            this.$refs.searchInput.$el.children[0].focus();
+        });
+
+        this.eventListeners.removeDismissSearchListener = addKeybinding("escape", () => {
+            if (this.hasMouseOver == false) return;
+
+            this.search.dialogShown = false;
+        });
+    },
+    unmounted() {
+        this.$el.removeEventListener("mouseover", this.eventListeners.mouseEnter);
+        this.$el.removeEventListener("mouseleave", this.eventListeners.mouseLeave);
+
+        // Keybindings
+        this.eventListeners.removeActivateSearchListener();
+        this.eventListeners.removeDismissSearchListener();
+    },
     components: {
         FileItem,
     },
@@ -464,16 +505,16 @@ export default {
         padding: 10px;
         margin: 10px 0;
 
+        &:hover p:last-of-type {
+            color: var(--accent-color);
+        }
+
         p {
             color: gray;
             margin: 0;
             font-size: 16px;
             transition: var(--element-transition);
             transition-property: color;
-
-            &:last-of-type:hover {
-                color: var(--accent-color);
-            }
         }
     }
 

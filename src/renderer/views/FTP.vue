@@ -1,5 +1,7 @@
 <template>
     <Header :title="`Connected to ${currentProfileInfo.name}`" :isSftpHeader="true">
+        <hy-button @click="keybindingsHelpShown = !keybindingsHelpShown" :extend="false" type="transparent"> <i class="icon-command"></i> </hy-button>
+
         <hy-popover v-model="filterDialogShown">
             <template #element>
                 <hy-button @click="filterDialogShown = !filterDialogShown" id="filterOpenPopoverBtn" :extend="false" type="transparent">
@@ -38,6 +40,22 @@
 
         <hy-button @click="reloadFiles()" :extend="false" type="transparent"> <i class="icon-reload"></i> Refresh</hy-button>
     </Header>
+
+    <hy-modal v-model="keybindingsHelpShown">
+        <div id="keybindingsHelpModal">
+            <h1>Keybindings</h1>
+
+            <div class="keybinding">
+                <h4>Search current folder</h4>
+                <p><i class="icon-command"></i> + F</p>
+            </div>
+
+            <div class="keybinding">
+                <h4>Dismiss search dialog</h4>
+                <p>Escape</p>
+            </div>
+        </div>
+    </hy-modal>
 
     <hy-main id="ftp" maxWidth="2000px">
         <FilesSplitView v-if="currentProfileInfo" :remoteFiles="remoteFiles" :localFiles="localFiles" :client="currentClient" :profileInfo="currentProfileInfo" :paths="paths" :loadingFiles="loadingFiles" @fetchRemote="getRemoteFiles()" @fetchLocal="getLocalFiles()" @updatePaths="updatePaths" />
@@ -80,6 +98,7 @@ export default {
             profiles,
             settings,
             filterDialogShown: false,
+            keybindingsHelpShown: false,
         };
     },
     methods: {
@@ -250,6 +269,30 @@ export default {
         padding-top: 10px;
         padding-left: 10px;
         padding-bottom: 10px;
+    }
+}
+
+#keybindingsHelpModal {
+    .keybinding {
+        background-color: var(--color-gray-3);
+        border-radius: var(--element-border-radius);
+        padding: var(--element-padding);
+        margin: var(--element-margin);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        h4 {
+            margin: 0;
+        }
+
+        p {
+            margin: 0;
+            padding: 5px;
+            border-radius: 7px;
+            background-color: var(--section-bg-color);
+            font-family: "Source Code Pro", monospace;
+        }
     }
 }
 </style>

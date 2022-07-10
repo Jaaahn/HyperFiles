@@ -77,7 +77,7 @@
                         <template #popover>
                             <h4>New directory in {{ type }}</h4>
                             <hy-input v-model="newDir.name" placeholder="Name of new directory" />
-                            <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary"> <i class="icon-plus"></i> </hy-button>
+                            <hy-button @click="createNewDir()" :disabled="newDir.name == ''" :loading="newDir.loading" type="primary" class="undoTextLeft"> <i class="icon-plus"></i> Create </hy-button>
                         </template>
                     </hy-popover>
                 </hy-flex-container>

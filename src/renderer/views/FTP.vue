@@ -76,7 +76,7 @@
 
             <div class="keybinding">
                 <h4>Modify current path</h4>
-                <p>P</p>
+                <p><i class="icon-command"></i> + P</p>
             </div>
         </div>
     </hy-modal>

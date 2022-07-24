@@ -449,7 +449,7 @@ export default {
             this.$refs.newDirInput.$el.children[0].blur();
         });
 
-        this.eventListeners.removeFocusPathInput = addKeybinding("p", (event) => {
+        this.eventListeners.removeFocusPathInput = addKeybinding("meta + p", (event) => {
             if (this.hasMouseOver == false) return;
 
             event.preventDefault();

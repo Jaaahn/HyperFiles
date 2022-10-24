@@ -35,6 +35,9 @@ p {
 }
 
 // Variables
+:root {
+    --button-transparent-hover: var(--button-light-blue-hover) !important;
+}
 
 // Light
 @media (prefers-color-scheme: light) {

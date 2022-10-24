@@ -32,15 +32,15 @@
         "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
         "@electron-forge/maker-zip": "^6.0.0-beta.63",
         "@electron-forge/publisher-github": "*",
-        "@vitejs/plugin-vue": "^2.3.1",
-        "@vue/compiler-sfc": "^3.2.33",
+        "@vitejs/plugin-vue": "^3.1.2",
+        "@vue/compiler-sfc": "^3.2.41",
         "electron": "^18.2.0",
         "sass": "^1.51.0",
-        "vite": "^2.9.13"
+        "vite": "^3.1.8"
     },
     "dependencies": {
         "@electron/remote": "^2.0.8",
-        "@jaaahn/hyper-ui": "^2.1.0",
+        "@jaaahn/hyper-ui": "^2.4.0-beta.18",
         "@jaaahn/shared-utils": "^1.0.5",
         "@vueuse/core": "^8.4.0",
         "axios": "^0.27.2",
@@ -52,9 +52,9 @@
         "lodash": "^4.17.21",
         "p-queue": "^7.2.0",
         "rollup-plugin-license": "^2.8.1",
-        "ssh2-sftp-client": "8.0.0",
-        "vue": "^3.2.33",
-        "vue-router": "^4.0.14"
+        "ssh2-sftp-client": "8.1.0",
+        "vue": "^3.2.41",
+        "vue-router": "^4.1.6"
     },
     "config": {
         "forge": {

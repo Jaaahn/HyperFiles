@@ -33,7 +33,7 @@
                 </hy-sub-section>
 
                 <hy-sub-section>
-                    <hy-checkbox v-model="settings.filters.separateDirs">Separate directories</hy-checkbox>
+                    <hy-toggle v-model="settings.filters.separateDirs" type="right">Separate directories</hy-toggle>
                 </hy-sub-section>
             </template>
         </hy-popover>

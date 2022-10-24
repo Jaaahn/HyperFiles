@@ -38,8 +38,8 @@
                     <hy-input v-model="renaming.newVal" placeholder="file name" />
 
                     <hy-flex-container>
-                        <hy-button @click="rename()" :disabled="renaming.newVal == '' || renaming.newVal == file.name" :loading="loading.rename" type="primary" title="Save changes"><i class="icon-check"></i></hy-button>
-                        <hy-button @click="resetRename()" title="Cancel and discard changes"><i class="icon-cross" style="color: var(--color-pink)"></i></hy-button>
+                        <hy-button @click="rename()" :disabled="renaming.newVal == '' || renaming.newVal == file.name" :loading="loading.rename" type="primary" title="Save changes" class="undoTextLeft"><i class="icon-check"></i></hy-button>
+                        <hy-button @click="resetRename()" title="Cancel and discard changes" class="undoTextLeft"><i class="icon-cross" style="color: var(--color-pink)"></i></hy-button>
                     </hy-flex-container>
                 </template>
             </hy-popover>

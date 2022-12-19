@@ -17,6 +17,13 @@
 
         <h2>Remote</h2>
 
+        <hy-sub-section title="Path system">
+            <hy-select v-model="profileData.remote.pathSystem">
+                <option value="posix">POSIX</option>
+                <option value="win32">Windows</option>
+            </hy-select>
+        </hy-sub-section>
+
         <hy-sub-section title="Starting path">
             <hy-input v-model="profileData.remote.path" placeholder="Starting path" />
         </hy-sub-section>

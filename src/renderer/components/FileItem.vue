@@ -79,6 +79,7 @@ export default {
         file: Object,
         client: Object,
         paths: Object,
+        profileInfo: Object,
         watchingFile: Boolean,
     },
     data() {
@@ -139,7 +140,7 @@ export default {
 
             // Remote path must include a valid filename (like the folder name if uploading an entire directory)
             // If I want to upload a "test" directory, file path must be "/my/current/path/test/"
-            let remoteFilePath = pathModule.join(this.paths.remote, this.file.name);
+            let remoteFilePath = pathModule[this.profileInfo.remote.pathSystem].join(this.paths.remote, this.file.name);
 
             try {
                 if (this.isFile) await this.client.fastPut(this.file.path, remoteFilePath);
@@ -160,7 +161,7 @@ export default {
 
             // Will put the content of the local directory to the selected path
             // We on purpose omit the local directories name, so that sftp will put the contents just in the selected remote path
-            let remoteFilePath = pathModule.join(this.paths.remote);
+            let remoteFilePath = pathModule[this.profileInfo.remote.pathSystem].join(this.paths.remote);
 
             try {
                 await this.client.uploadDir(this.file.path, remoteFilePath);
@@ -214,7 +215,9 @@ export default {
         async rename() {
             this.loading.rename = true;
 
-            let newFilePath = pathModule.join(pathModule.dirname(this.file.path), this.renaming.newVal);
+            let newFilePath;
+            if (this.type == "remote") newFilePath = pathModule[this.profileInfo.remote.pathSystem].join(pathModule[this.profileInfo.remote.pathSystem].dirname(this.file.path), this.renaming.newVal);
+            else newFilePath = pathModule.join(pathModule.dirname(this.file.path), this.renaming.newVal);
 
             try {
                 if (this.type == "remote") {

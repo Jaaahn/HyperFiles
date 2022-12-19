@@ -86,6 +86,7 @@ export default {
                     port: "22",
                     username: "",
                     privateKeyPath: "",
+                    pathSystem: "posix",
                 },
                 local: {
                     path: "/",

@@ -146,7 +146,7 @@ export default {
                 let formatedFiles = files.map((file) => {
                     return {
                         ...file,
-                        path: pathModule.join(dirPath, file.name),
+                        path: pathModule[this.currentProfileInfo.remote.pathSystem].join(dirPath, file.name),
                     };
                 });
 
@@ -211,11 +211,11 @@ export default {
             this.loadingFiles.local = false;
         },
         updatePaths(newPath, type) {
-            this.paths[type] = pathModule.join(newPath.trim());
-
             if (type == "remote") {
+                this.paths.remote = pathModule[this.currentProfileInfo.remote.pathSystem].join(newPath.trim());
                 this.getRemoteFiles();
             } else {
+                this.paths.local = pathModule.join(newPath.trim());
                 this.getLocalFiles();
             }
         },

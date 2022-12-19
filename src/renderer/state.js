@@ -21,3 +21,10 @@ if (settings.value.filters == undefined) {
         separateDirs: false,
     };
 }
+
+// MIGRATE - Add pathSystem and init to posix
+profiles.value.forEach((profile) => {
+    if (profile.remote.pathSystem == undefined) {
+        profile.remote.pathSystem = "posix";
+    }
+});

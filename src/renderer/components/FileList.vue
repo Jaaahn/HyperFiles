@@ -90,7 +90,7 @@
         </div>
 
         <div class="files">
-            <FileItem class="file" v-for="file in sortedFiles" :file="file" :client="client" :paths="paths" :type="type" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchLocal="$emit('fetchLocal')" @fetchRemote="$emit('fetchRemote')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file)" />
+            <FileItem class="file" v-for="file in sortedFiles" :file="file" :client="client" :paths="paths" :profileInfo="profileInfo" :type="type" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchLocal="$emit('fetchLocal')" @fetchRemote="$emit('fetchRemote')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file)" />
         </div>
 
         <div class="viewInfo" v-if="loadingFiles[type]">
@@ -234,7 +234,10 @@ export default {
             if (this.newDir.name == "") return;
 
             this.newDir.loading = true;
-            let newDirPath = pathModule.join(this.paths[this.type], this.newDir.name);
+
+            let newDirPath;
+            if (this.type == "remote") newDirPath = pathModule[this.profileInfo.remote.pathSystem].join(this.paths.remote, this.newDir.name);
+            else newDirPath = pathModule.join(this.paths.local, this.newDir.name);
 
             try {
                 if (this.type == "remote") {
@@ -262,7 +265,10 @@ export default {
             this.search.dialogShown = false;
         },
         openParentFolder() {
-            let newPath = pathModule.join(this.paths[this.type], "..");
+            let newPath;
+            if (this.type == "remote") newPath = pathModule[this.profileInfo.remote.pathSystem].join(this.paths.remote, "..");
+            else newPath = pathModule.join(this.paths.local, "..");
+
             this.updatePaths(newPath);
         },
         openFolder(file) {
@@ -312,7 +318,7 @@ export default {
 
             let uploadFile = async (path) => {
                 let relativeLocalPath = pathModule.relative(this.paths.local, path);
-                let remoteFilePath = pathModule.join(this.paths.remote, relativeLocalPath);
+                let remoteFilePath = pathModule[this.profileInfo.remote.pathSystem].join(this.paths.remote, relativeLocalPath);
 
                 let fileStats = await fsp.lstat(path);
 

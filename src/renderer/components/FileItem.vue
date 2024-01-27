@@ -69,7 +69,7 @@ let fsp = require("fs/promises");
 let shell = require("electron").shell;
 let pathModule = require("path");
 import { timeDifferenceString } from "@jaaahn/shared-utils";
-import filesize from "filesize";
+import { filesize } from "filesize";
 
 export default {
     name: "FileItem",

@@ -24,7 +24,7 @@
 
         <h1>About</h1>
         <hy-sub-section>
-            <router-link to="/licences">Open-Source Licences</router-link>
+            <router-link to="/licenses">Open-Source Licenses</router-link>
         </hy-sub-section>
     </hy-main>
 </template>

@@ -16,7 +16,7 @@ export default {
             thirdParty: {
                 includePrivate: true,
                 output: {
-                    file: path.join(__dirname, "vue-dist", "open-source-licences.txt"),
+                    file: path.join(__dirname, "vue-dist", "open-source-licenses.txt"),
                     encoding: "utf-8",
                 },
             },

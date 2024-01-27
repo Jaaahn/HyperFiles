@@ -1,6 +1,6 @@
 {
     "name": "HyperFiles",
-    "version": "1.2.6",
+    "version": "1.2.7",
     "main": "./src/index.js",
     "description": "HyperFiles - Do SFTP the easy way",
     "author": {

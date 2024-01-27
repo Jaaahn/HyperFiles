@@ -2,7 +2,7 @@ import { createWebHashHistory, createRouter } from "vue-router";
 import FTP from "./views/FTP.vue";
 import Home from "./views/Home.vue";
 import Settings from "./views/Settings.vue";
-import Licences from "./views/Licences.vue";
+import Licenses from "./views/Licenses.vue";
 
 const router = createRouter({
     history: createWebHashHistory(),
@@ -23,9 +23,9 @@ const router = createRouter({
             component: Settings,
         },
         {
-            path: "/licences",
-            name: "Licences",
-            component: Licences,
+            path: "/licenses",
+            name: "Licenses",
+            component: Licenses,
         },
     ],
 });

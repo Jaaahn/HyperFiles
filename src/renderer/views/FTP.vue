@@ -46,6 +46,13 @@
             <h1>Keybindings</h1>
 
             <div class="keybinding">
+                <h4>Refresh</h4>
+                <p><i class="icon-command"></i> + R</p>
+            </div>
+
+            <hr />
+
+            <div class="keybinding">
                 <h4>Search current folder</h4>
                 <p><i class="icon-command"></i> + F</p>
             </div>
@@ -78,6 +85,16 @@
                 <h4>Modify current path</h4>
                 <p><i class="icon-command"></i> + P</p>
             </div>
+
+            <div class="keybinding">
+                <h4>Confirm and navigate to path</h4>
+                <p>Enter</p>
+            </div>
+
+            <div class="keybinding">
+                <h4>Dismiss modify path dialog</h4>
+                <p>Escape</p>
+            </div>
         </div>
     </hy-modal>
 
@@ -95,6 +112,8 @@ let keytar = require("keytar");
 
 import { profiles, settings } from "../state.js";
 import getAccountInfoString from "../utils/getAccountInfoString.js";
+
+import addKeybinding from "../utils/addKeybinding.js";
 
 import Header from "../components/Header.vue";
 import FilesSplitView from "../components/FilesSplitView.vue";
@@ -123,6 +142,9 @@ export default {
             settings,
             filterDialogShown: false,
             keybindingsHelpShown: false,
+            eventListeners: {
+                removeReloadFiles: null,
+            },
         };
     },
     methods: {
@@ -263,6 +285,12 @@ export default {
 
         // Get remote files
         this.getRemoteFiles();
+
+        // Keybindings
+        this.eventListeners.removeReloadFiles = addKeybinding("meta + r", (event) => {
+            event.preventDefault(); // Preventing chrome from reloading the page
+            this.reloadFiles();
+        });
     },
     components: {
         Header,

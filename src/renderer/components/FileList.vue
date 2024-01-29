@@ -89,7 +89,7 @@
             <p><i class="icon-cross"></i></p>
         </div>
 
-        <div class="files">
+        <div class="files" v-if="isPathInvalid == false">
             <FileItem class="file" v-for="file in sortedFiles" :file="file" :client="client" :paths="paths" :profileInfo="profileInfo" :type="type" :watchingFile="watchedFiles.includes(file.path)" :key="file" @fetchLocal="$emit('fetchLocal')" @fetchRemote="$emit('fetchRemote')" @watchFile="watchFileStartStop($event, file)" @dblclick.native="openFolder(file)" />
         </div>
 
@@ -278,9 +278,17 @@ export default {
         },
         selectPathWithAddressBar(event) {
             // Called by the address bar input element
-            if (event.code != "Enter") return;
 
-            this.updatePaths(event.target.value);
+            if (event.code == "Enter") this.updatePaths(event.target.value);
+
+            // Not required as input elements automtically revert to the given :value property if blurred
+            /* if (event.code == "Escape") this.$refs.pathInput.value = this.paths[this.type]; */
+
+            if (event.code == "Enter" || event.code == "Escape") {
+                // Close and minify path input
+                this.expandPathInput = false;
+                event.target.blur();
+            }
         },
         async selectPathWithFinder() {
             if (this.type != "local") return;
@@ -424,21 +432,22 @@ export default {
             if (this.hasMouseOver == false) return;
 
             this.search.dialogShown = true;
-            this.$refs.searchInput.$el.children[0].focus();
+            this.$nextTick(() => this.$refs.searchInput.$el?.children[0].focus());
         });
 
         this.eventListeners.removeDismissSearch = addKeybinding("escape", () => {
             if (this.hasMouseOver == false) return;
+            if (this.search.dialogShown == false) return;
 
+            this.$nextTick(() => this.$refs.searchInput.$el?.children[0].blur());
             this.search.dialogShown = false;
-            this.$refs.searchInput.$el.children[0].blur();
         });
 
         this.eventListeners.removeActivateNewDirMenu = addKeybinding("meta + n", () => {
             if (this.hasMouseOver == false) return;
 
             this.newDir.open = true;
-            this.$refs.newDirInput.$el.children[0].focus();
+            this.$nextTick(() => this.$refs.newDirInput.$el?.children[0].focus());
         });
 
         this.eventListeners.removeCreateNewDir = addKeybinding("enter", () => {
@@ -450,9 +459,10 @@ export default {
 
         this.eventListeners.removeDismissNewDirMenu = addKeybinding("escape", () => {
             if (this.hasMouseOver == false) return;
+            if (this.newDir.open == false) return;
 
+            this.$nextTick(() => this.$refs.newDirInput.$el?.children[0].blur());
             this.newDir.open = false;
-            this.$refs.newDirInput.$el.children[0].blur();
         });
 
         this.eventListeners.removeFocusPathInput = addKeybinding("meta + p", (event) => {

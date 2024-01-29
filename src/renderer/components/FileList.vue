@@ -259,6 +259,8 @@ export default {
             this.newDir.loading = false;
         },
         updatePaths(newPath) {
+            newPath = pathModule.join(newPath, "/"); // Automatically end path with a "/"
+
             this.$emit("updatePaths", newPath, this.type);
             this.closeFileWatcher();
             this.search.term = "";
